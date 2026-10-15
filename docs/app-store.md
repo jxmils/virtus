@@ -36,15 +36,17 @@ order. Leave iPad and iPhone Duo empty; Apple reuses the 6.9" set.
 **Promotional Text** (170):
 
 ```
-Marcus Aurelius, Seneca, Leonidas, Napoleon: one quotation a day, set in black. Pin the lines that matter, keep them on your Lock Screen. No ads, no subscription.
+Stoicism for those who want to find their real selves.
 ```
 
 **Description** (4,000):
 
 ```
-One quotation a day, on your Lock Screen before you have opened anything else.
+Stoicism for those who want to find their real selves.
 
-Virtus is a quote app for men who like their words set in black: Marcus Aurelius, Seneca, Epictetus, Leonidas, Alexander, Caesar, Napoleon, Musashi, Churchill and the rest. One line a day, the same for everyone, new at midnight. Serif type on black, the author in small capitals, and nothing else on the screen.
+Every morning, one line from a man who lived it: Marcus Aurelius writing to himself in a war camp, Seneca facing exile, Leonidas at the pass, Musashi alone on the road. Not a feed. Not a list. One quotation a day, the same for everyone, on your Lock Screen before the world gets to you.
+
+Black screen, serif type, the author in small capitals. Nothing else.
 
 TODAY
 The day's quote with its author and source. Pin it, feature it on your widget, or share it as a black card.
