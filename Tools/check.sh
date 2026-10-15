@@ -71,3 +71,4 @@ swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusScreens \
   Shared/*.swift $(find Virtus -name '*.swift' ! -name VirtusApp.swift) \
   Tools/screens/main.swift -o "$TMP/screens"
 "$TMP/screens" "$OUT/screens.png"
+"$TMP/screens" --store build/store

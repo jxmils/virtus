@@ -10,7 +10,8 @@ struct ArchiveScreen: View {
         VStack(spacing: 0) {
             PageHeader(left: "Archive", right: "Past days")
             if preview {
-                ArchiveList(items: Array(model.archive(days: 4))).padding(.horizontal, 28)
+                ArchiveList(items: Array(model.archive(days: 7))).padding(.horizontal, 28)
+                Spacer(minLength: 0)
             } else {
                 ScrollView {
                     ArchiveList(items: model.archive()).padding(.horizontal, 28)

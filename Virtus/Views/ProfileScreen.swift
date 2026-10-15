@@ -94,7 +94,7 @@ struct ProfileContent: View {
 
             // More
             Caps("More", size: 10, color: VirtusPalette.inkFaint, tracking: 3).padding(.top, 28)
-            ReminderRow().padding(.vertical, 12)
+            ReminderRow(preview: preview).padding(.vertical, 12)
             Hairline()
             Button(action: showGuide) {
                 HStack {
@@ -117,6 +117,8 @@ struct ProfileContent: View {
 /// Daily reminder on/off with its time.
 struct ReminderRow: View {
     @Environment(AppModel.self) private var model
+    /// The render harness cannot draw a UIKit switch, so it gets a drawn one.
+    var preview = false
 
     var body: some View {
         let on = Binding(get: { model.profile.reminderOn },
@@ -128,11 +130,32 @@ struct ReminderRow: View {
                 model.setReminder(on: model.profile.reminderOn, hour: c.hour ?? 7, minute: c.minute ?? 0)
             })
         VStack(spacing: 10) {
-            Toggle(isOn: on) {
-                Text("Daily reminder").font(VirtusFont.body(17)).foregroundStyle(VirtusPalette.ink)
+            if preview {
+                HStack {
+                    Text("Daily reminder").font(VirtusFont.body(17)).foregroundStyle(VirtusPalette.ink)
+                    Spacer()
+                    Capsule().fill(model.profile.reminderOn ? VirtusPalette.gold : VirtusPalette.raised)
+                        .frame(width: 51, height: 31)
+                        .overlay(alignment: model.profile.reminderOn ? .trailing : .leading) {
+                            Circle().fill(.white).padding(2)
+                        }
+                }
+            } else {
+                Toggle(isOn: on) {
+                    Text("Daily reminder").font(VirtusFont.body(17)).foregroundStyle(VirtusPalette.ink)
+                }
+                .tint(VirtusPalette.gold)
             }
-            .tint(VirtusPalette.gold)
-            if model.profile.reminderOn {
+            if model.profile.reminderOn, preview {
+                HStack {
+                    Text("Time").font(VirtusFont.body(15)).foregroundStyle(VirtusPalette.inkSoft)
+                    Spacer()
+                    Text(time.wrappedValue.formatted(date: .omitted, time: .shortened))
+                        .font(VirtusFont.body(15)).foregroundStyle(VirtusPalette.ink)
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(VirtusPalette.raised, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                }
+            } else if model.profile.reminderOn {
                 DatePicker("Time", selection: time, displayedComponents: .hourAndMinute)
                     .font(VirtusFont.body(15))
                     .foregroundStyle(VirtusPalette.inkSoft)
