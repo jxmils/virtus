@@ -4,13 +4,9 @@ import UIKit
 // Renders Virtus's screens with a sample profile to one PNG (Mac Catalyst, no simulator needed).
 // Usage: screens <output.png>
 
-/// App Store screenshots: 440x956 pt at 3x = 1320x2868 (iPhone 6.9"). Today is rendered on a day whose
-/// quote has a portrait, so the first screenshot shows the art.
+/// The sample profile and clock the store assets are rendered from. Today is a day whose quote has a portrait.
 @MainActor
-func store(into dir: URL) async {
-    try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-    let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("virtus-store-\(UUID().uuidString)")
-    defer { try? FileManager.default.removeItem(at: tmp) }
+func storeModel(tmp: URL) -> (AppModel, Date, Calendar) {
     var cal = Calendar(identifier: .gregorian)
     cal.timeZone = TimeZone(identifier: "Europe/London")!
     Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
@@ -22,11 +18,41 @@ func store(into dir: URL) async {
     model.setReminder(on: true, hour: 7, minute: 0)
     for d in [0, 2, 5] { model.pin(d == 0 ? model.today : model.archive(days: 6)[d].quote) }
     model.message = nil
-    let alexander = QuoteLibrary.all.first { $0.author == "Alexander the Great" && $0.text.count > 100 }!
-    let marcus = QuoteLibrary.all.first { $0.author == "Marcus Aurelius" && $0.text.count < 60 }!
+    return (model, now, cal)
+}
 
-    let widgets = VStack(alignment: .leading, spacing: 22) {
-        Caps("On your Home Screen", size: 11, color: VirtusPalette.inkFaint, tracking: 3).padding(.top, 60)
+/// One app screen as it would fill a phone of `size` points (no status bar).
+@MainActor
+func phoneScreen(_ view: AnyView, route: AppModel.Route, size: CGSize) -> some View {
+    ZStack(alignment: .top) {
+        VirtusPalette.black
+        VStack(spacing: 0) {
+            view
+            RouteBar(route: .constant(route)).padding(.bottom, 24)
+        }
+        .padding(.top, 54)
+    }
+    .frame(width: size.width, height: size.height)
+    .environment(\.colorScheme, .dark)
+    .tint(VirtusPalette.gold)
+}
+
+@MainActor
+func writePNG<V: View>(_ view: V, scale: CGFloat, to url: URL) -> CGSize {
+    let renderer = ImageRenderer(content: view)
+    renderer.scale = scale
+    guard let image = renderer.uiImage, let data = image.pngData() else { print("render failed: \(url.lastPathComponent)"); exit(1) }
+    try? data.write(to: url)
+    return CGSize(width: image.size.width * image.scale, height: image.size.height * image.scale)
+}
+
+/// The widgets composition used by a screenshot and the preview.
+@MainActor
+func widgetsScene(model: AppModel, now: Date, caption: Bool) -> AnyView {
+    let marcus = QuoteLibrary.all.first { $0.author == "Marcus Aurelius" && $0.text.count < 60 }!
+    return AnyView(VStack(alignment: .leading, spacing: 22) {
+        if caption { Caps("On your Home Screen", size: 11, color: VirtusPalette.inkFaint, tracking: 3).padding(.top, 60) }
+        else { Spacer().frame(height: 50) }
         VirtusWidgetContent(slot: WidgetSlot(date: now, quote: model.today), size: .large, pinned: true, source: .pinned)
             .frame(width: 364, height: 382).background(VirtusPalette.black)
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
@@ -45,32 +71,84 @@ func store(into dir: URL) async {
         Spacer()
     }
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.horizontal, 38)
+    .padding(.horizontal, 38))
+}
 
-    let shots: [(String, AnyView, AppModel.Route)] = [
+/// App Store screenshots: a serif headline above the screen, 440x956 pt at 3x = 1320x2868 (iPhone 6.9").
+@MainActor
+func store(into dir: URL) async {
+    try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("virtus-store-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: tmp) }
+    let (model, now, _) = storeModel(tmp: tmp)
+    let alexander = QuoteLibrary.all.first { $0.author == "Alexander the Great" && $0.text.count > 100 }!
+    let shots: [(String, String, AnyView, AppModel.Route)] = [
+        ("1-today", "One quotation a day.", AnyView(TodayScreen().environment(model)), .today),
+        ("2-quote", "From men who lived it.", AnyView(QuoteDetail(quote: alexander, close: {}).environment(model)), .today),
+        ("3-widgets", "On your Home Screen and Lock Screen.", widgetsScene(model: model, now: now, caption: false), .today),
+        ("4-profile", "Pin the lines that matter.", AnyView(ProfileScreen(preview: true).environment(model)), .profile),
+        ("5-archive", "Every past day, kept.", AnyView(ArchiveScreen(preview: true).environment(model)), .archive),
+    ]
+    let size = CGSize(width: 440, height: 956)
+    for (name, headline, view, route) in shots {
+        let page = ZStack(alignment: .top) {
+            VirtusPalette.black
+            VStack(spacing: 22) {
+                VStack(spacing: 14) {
+                    Caps("Virtus", size: 11, color: VirtusPalette.inkFaint, tracking: 4)
+                    Text(headline)
+                        .font(VirtusFont.quote(34))
+                        .foregroundStyle(VirtusPalette.ink)
+                        .multilineTextAlignment(.center)
+                        .lineSpacing(4)
+                        .frame(width: 360, height: 96, alignment: .top)
+                }
+                .padding(.top, 56)
+                phoneScreen(view, route: route, size: size)
+                    .clipShape(RoundedRectangle(cornerRadius: 56, style: .continuous))
+                    .overlay(RoundedRectangle(cornerRadius: 56, style: .continuous).strokeBorder(Color.white.opacity(0.16), lineWidth: 1.5))
+                    .scaleEffect(0.77, anchor: .top)
+                    .frame(width: size.width * 0.77, height: size.height * 0.77, alignment: .top)
+            }
+        }
+        .frame(width: size.width, height: size.height)
+        .environment(\.colorScheme, .dark)
+        let px = writePNG(page, scale: 3, to: dir.appendingPathComponent("\(name).png"))
+        print("store \(name) \(Int(px.width))x\(Int(px.height))")
+    }
+}
+
+/// App preview scenes: full-bleed screens at 443x960 pt, 2x = 886x1920 (the 6.9" preview slot). ffmpeg
+/// crossfades them (see Tools/preview.sh).
+@MainActor
+func preview(into dir: URL) async {
+    try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("virtus-preview-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: tmp) }
+    let (model, now, _) = storeModel(tmp: tmp)
+    let alexander = QuoteLibrary.all.first { $0.author == "Alexander the Great" && $0.text.count > 100 }!
+    let size = CGSize(width: 443, height: 960)
+    let endCard = AnyView(VStack(spacing: 26) {
+        Spacer()
+        Text("V").font(.system(size: 120, weight: .regular, design: .serif)).foregroundStyle(VirtusPalette.ink)
+        Caps("Virtus", size: 16, color: VirtusPalette.ink, tracking: 8)
+        Text("One quotation a day.").font(VirtusFont.quote(26)).foregroundStyle(VirtusPalette.inkSoft)
+        Caps("Free. No ads.", size: 10, color: VirtusPalette.inkFaint, tracking: 3)
+        Spacer()
+    }.frame(maxWidth: .infinity))
+    let scenes: [(String, AnyView, AppModel.Route?)] = [
         ("1-today", AnyView(TodayScreen().environment(model)), .today),
         ("2-quote", AnyView(QuoteDetail(quote: alexander, close: {}).environment(model)), .today),
         ("3-profile", AnyView(ProfileScreen(preview: true).environment(model)), .profile),
-        ("4-archive", AnyView(ArchiveScreen(preview: true).environment(model)), .archive),
-        ("5-widgets", AnyView(widgets), .today),
+        ("4-widgets", widgetsScene(model: model, now: now, caption: true), .today),
+        ("5-archive", AnyView(ArchiveScreen(preview: true).environment(model)), .archive),
+        ("6-end", endCard, nil),
     ]
-    for (name, view, route) in shots {
-        let page = ZStack(alignment: .top) {
-            VirtusPalette.black
-            VStack(spacing: 0) {
-                view
-                RouteBar(route: .constant(route)).padding(.bottom, 24)
-            }
-            .padding(.top, 54)
-        }
-        .frame(width: 440, height: 956)
-        .environment(\.colorScheme, .dark)
-        .tint(VirtusPalette.gold)
-        let renderer = ImageRenderer(content: page)
-        renderer.scale = 3
-        guard let image = renderer.uiImage, let data = image.pngData() else { print("render failed: \(name)"); exit(1) }
-        try? data.write(to: dir.appendingPathComponent("\(name).png"))
-        print("store \(name) \(Int(image.size.width * image.scale))x\(Int(image.size.height * image.scale))")
+    for (name, view, route) in scenes {
+        let page: AnyView = route.map { AnyView(phoneScreen(view, route: $0, size: size)) }
+            ?? AnyView(ZStack { VirtusPalette.black; view }.frame(width: size.width, height: size.height).environment(\.colorScheme, .dark))
+        let px = writePNG(page, scale: 2, to: dir.appendingPathComponent("\(name).png"))
+        print("preview scene \(name) \(Int(px.width))x\(Int(px.height))")
     }
 }
 
@@ -119,6 +197,10 @@ func header(to path: String) {
 func run() async {
     if CommandLine.arguments.dropFirst().first == "--header" {
         header(to: CommandLine.arguments.dropFirst(2).first ?? "build/store/header.png")
+        return
+    }
+    if CommandLine.arguments.dropFirst().first == "--preview" {
+        await preview(into: URL(fileURLWithPath: CommandLine.arguments.dropFirst(2).first ?? "build/preview"))
         return
     }
     if CommandLine.arguments.dropFirst().first == "--store" {

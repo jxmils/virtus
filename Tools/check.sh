@@ -73,3 +73,5 @@ swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusScreens \
 "$TMP/screens" "$OUT/screens.png"
 "$TMP/screens" --store build/store
 "$TMP/screens" --header build/store/header.png
+"$TMP/screens" --preview build/preview
+if command -v ffmpeg >/dev/null; then Tools/preview.sh build/preview build/store/preview-6.9.mp4; else echo "   (ffmpeg not installed: app preview video skipped)"; fi
