@@ -30,6 +30,14 @@ struct RootView: View {
             try? await Task.sleep(for: .seconds(1.6))
             model.message = nil
         }
+        .task {
+            // Turn the page at midnight if the app is still open.
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(model.secondsToNextDay))
+                guard !Task.isCancelled else { break }
+                model.dayChanged()
+            }
+        }
     }
 }
 

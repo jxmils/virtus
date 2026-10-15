@@ -4,6 +4,11 @@
 <dict>
 	<key>VirtusAppGroup</key>
 	<string>group.$(VIRTUS_ID_PREFIX).Virtus</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>CFBundleURLTypes</key>

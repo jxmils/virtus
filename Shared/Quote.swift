@@ -85,6 +85,15 @@ enum DailyQuote {
                 }
             }
         }
+        // The last day is followed by the first again once the library wraps.
+        if count > 3, authors[order[count - 1]] == authors[order[0]] {
+            let last = authors[order[count - 1]]
+            for k in 1..<(count - 2) where authors[order[k]] != authors[order[0]] && authors[order[k]] != authors[order[count - 2]]
+                && last != authors[order[k - 1]] && last != authors[order[k + 1]] {
+                order.swapAt(count - 1, k)
+                break
+            }
+        }
         return order
     }
 }

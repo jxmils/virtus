@@ -5,6 +5,7 @@ struct TodayScreen: View {
     @Environment(AppModel.self) private var model
 
     var body: some View {
+        let _ = model.dayTick
         let quote = model.today
         VStack(spacing: 0) {
             ZStack(alignment: .top) {

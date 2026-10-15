@@ -32,6 +32,8 @@ final class AppModel {
     var selected: Quote?
     /// One short line of feedback, e.g. "Pinned".
     var message: String?
+    /// Bumped at local midnight so Today re-reads the day's quote while the app stays open.
+    private(set) var dayTick = 0
 
     init(env: VirtusEnvironment) {
         self.env = env
@@ -58,6 +60,18 @@ final class AppModel {
         }
         if changed { save() }
         env.scheduleReminders(profile, now)
+    }
+
+    /// Called by the midnight timer: the day changed under an open app.
+    func dayChanged() {
+        dayTick += 1
+        start()
+    }
+
+    /// Seconds until just after the next local midnight.
+    var secondsToNextDay: TimeInterval {
+        let next = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now.addingTimeInterval(86_400)
+        return max(1, next.timeIntervalSince(now) + 1)
     }
 
     /// Past days, newest first, with the quote each one had.

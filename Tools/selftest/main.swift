@@ -70,8 +70,8 @@ func render<V: View>(_ view: V, scale: CGFloat = 2, to url: URL) {
 
 var cal = Calendar(identifier: .gregorian)
 cal.timeZone = TimeZone(identifier: "Europe/London")!
-func date(_ y: Int, _ m: Int, _ d: Int, _ h: Int = 9) -> Date {
-    cal.date(from: DateComponents(year: y, month: m, day: d, hour: h))!
+func date(_ y: Int, _ m: Int, _ d: Int, _ h: Int = 9, _ minute: Int = 0) -> Date {
+    cal.date(from: DateComponents(year: y, month: m, day: d, hour: h, minute: minute))!
 }
 
 @MainActor
@@ -98,6 +98,9 @@ func run(out: URL) async {
     let repeats = (1..<all.count).filter { DailyQuote.quote(day: $0).author == DailyQuote.quote(day: $0 - 1).author }
     check(repeats.isEmpty, "no author two days running (\(repeats.count) clashes)")
     check(DailyQuote.quote(day: all.count).id == DailyQuote.quote(day: 0).id, "the order wraps after the whole library")
+    check(DailyQuote.quote(day: all.count - 1).author != DailyQuote.quote(day: 0).author, "and the wrap does not repeat an author either")
+    let wrapped = DailyQuote.order(count: 20, authors: ["x"] + Array(repeating: "y", count: 9) + Array(repeating: "x", count: 10))
+    check(Set(wrapped).count == 20, "the wrap fix keeps the order a permutation")
     check(DailyQuote.quote(day: -1).id == DailyQuote.quote(day: all.count - 1).id, "days before the epoch wrap backwards")
     check(DailyQuote.dayNumber(for: date(2026, 1, 1), calendar: cal) == 0, "1 January 2026 is day 0")
     check(DailyQuote.dayNumber(for: date(2026, 10, 15), calendar: cal) == 287, "15 October 2026 is day 287")
@@ -149,6 +152,12 @@ func run(out: URL) async {
     check(model.streak == 1 && model.daysOpened == 4, "and a new one starts")
     now = date(2026, 10, 20)
     check(model.streak == 1, "the streak survives until the end of the next day")
+    check(model.secondsToNextDay > 0 && model.secondsToNextDay <= 86_401, "midnight is at most a day away")
+    let tick = model.dayTick
+    now = date(2026, 10, 21, 0, 0)
+    model.dayChanged()
+    check(model.dayTick == tick + 1 && model.profile.openedDays.contains(DailyQuote.dayNumber(for: now, calendar: cal)), "a midnight tick counts the new day")
+    now = date(2026, 10, 20)
     model.open(url: VirtusLink.quote(other.id))
     check(model.selected?.id == other.id, "a widget link opens its quote")
     model.open(url: VirtusLink.pinned)
