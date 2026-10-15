@@ -24,13 +24,16 @@ func storeModel(tmp: URL) -> (AppModel, Date, Calendar) {
 /// One app screen as it would fill a phone of `size` points (no status bar).
 @MainActor
 func phoneScreen(_ view: AnyView, route: AppModel.Route, size: CGSize) -> some View {
-    ZStack(alignment: .top) {
+    // The bar is pinned over the bottom so a screen whose content is taller than the phone is clipped
+    // above it instead of pushing the bar out of the frame.
+    ZStack(alignment: .bottom) {
         VirtusPalette.black
-        VStack(spacing: 0) {
-            view
-            RouteBar(route: .constant(route)).padding(.bottom, 24)
-        }
-        .padding(.top, 54)
+        view
+            .padding(.top, 54)
+            .padding(.bottom, 80)
+            .frame(width: size.width, height: size.height, alignment: .top)
+            .clipped()
+        RouteBar(route: .constant(route)).padding(.bottom, 24).background(VirtusPalette.black)
     }
     .frame(width: size.width, height: size.height)
     .environment(\.colorScheme, .dark)
