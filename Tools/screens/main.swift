@@ -83,7 +83,18 @@ func header(to path: String) {
     let view = ZStack(alignment: .leading) {
         VirtusPalette.black
         if let portrait = Portraits.image(for: quote, maxPixel: 2000) {
-            FadedPortrait(image: portrait, side: true).frame(width: 1920 * 0.46, height: 823)
+            // The portrait is tall; show the band around the face and let it dissolve to the right and below.
+            let w: CGFloat = 1920 * 0.46
+            Image(decorative: portrait, scale: 1).resizable().scaledToFill()
+                .frame(width: w, height: 823, alignment: .top).offset(y: -430)
+                .frame(width: w, height: 823).clipped()
+                .overlay(Color.black.opacity(0.15))
+                .overlay(LinearGradient(stops: [.init(color: .clear, location: 0.35), .init(color: .black, location: 1)],
+                                        startPoint: .leading, endPoint: .trailing))
+                .overlay(LinearGradient(stops: [.init(color: .black.opacity(0.7), location: 0), .init(color: .clear, location: 0.3)],
+                                        startPoint: .top, endPoint: .bottom))
+                .overlay(LinearGradient(stops: [.init(color: .clear, location: 0.6), .init(color: .black, location: 1)],
+                                        startPoint: .top, endPoint: .bottom))
         }
         HStack(spacing: 0) {
             Spacer(minLength: 0)

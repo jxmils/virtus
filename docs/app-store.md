@@ -36,7 +36,7 @@ order. Leave iPad and iPhone Duo empty; Apple reuses the 6.9" set.
 **Promotional Text** (170):
 
 ```
-Marcus Aurelius, Seneca, Leonidas, Napoleon: one quotation a day, set in black. Pin the lines that matter, keep them on your Lock Screen. No ads, no account, no subscription.
+Marcus Aurelius, Seneca, Leonidas, Napoleon: one quotation a day, set in black. Pin the lines that matter, keep them on your Lock Screen. No ads, no subscription.
 ```
 
 **Description** (4,000):
