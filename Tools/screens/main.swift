@@ -26,7 +26,11 @@ func run() async {
     let longEpictetus = QuoteLibrary.all.first { $0.author == "Epictetus" && $0.text.count > 150 }!
     let marcus = QuoteLibrary.all.first { $0.author == "Marcus Aurelius" && $0.text.count < 90 }!
     let seneca = QuoteLibrary.all.first { $0.author == "Seneca" && $0.text.count < 90 }!
+    let leonidas = QuoteLibrary.all.first { $0.author == "Leonidas" }!
+    let alexander = QuoteLibrary.all.first { $0.author == "Alexander the Great" && $0.text.count > 100 }!
     let screens: [(String, AnyView)] = [
+        ("leonidas (real art)", AnyView(QuoteDetail(quote: leonidas, close: {}).environment(model))),
+        ("alexander (real art)", AnyView(QuoteDetail(quote: alexander, close: {}).environment(model))),
         ("today (portrait)", AnyView(TodayScreen().environment(model))),
         ("quote, long (portrait under)", AnyView(QuoteDetail(quote: longEpictetus, close: {}).environment(model))),
         ("quote, no portrait", AnyView(QuoteDetail(quote: seneca, close: {}).environment(model))),
@@ -47,7 +51,7 @@ func run() async {
                             VirtusPalette.black
                             VStack(spacing: 0) {
                                 rows[r][i].1
-                                RouteBar(route: .constant(r == 1 && i == 0 ? .archive : (r == 1 && i < 3 ? .profile : .today)))
+                                RouteBar(route: .constant(r == 1 && i == 2 ? .archive : (r == 1 && i == 3 || r == 2 && i == 0 ? .profile : .today)))
                             }
                             .padding(.top, 50)
                         }

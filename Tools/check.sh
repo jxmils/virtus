@@ -63,6 +63,7 @@ swiftc -swift-version 5 -target arm64-apple-macos14.0 "${FLAGS[@]}" -module-name
   Shared/*.swift Virtus/Model/*.swift Tools/selftest/main.swift -o "$TMP/selftest"
 "$TMP/selftest" "$OUT"
 cp "$OUT/AppIcon.png" Virtus/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+cp Portraits/*.jpg Portraits/*.png "$OUT/portraits/" 2>/dev/null || true
 echo "   $(find Portraits -maxdepth 1 \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' \) | wc -l | tr -d ' ') real portraits in Portraits/"
 
 echo "== Screens (Mac Catalyst render)"
