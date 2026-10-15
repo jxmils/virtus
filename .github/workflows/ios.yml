@@ -74,8 +74,9 @@ jobs:
 
       - name: Inspect the app ids and drop stale Xcode-managed profiles
         run: |
-          pip3 install -q pyjwt cryptography
-          python3 - <<'PY' 2>&1 | tee -a build/setup.log
+          python3 -m venv build/venv 2>&1 | tee -a build/setup.log
+          build/venv/bin/pip install -q pyjwt cryptography 2>&1 | tee -a build/setup.log
+          build/venv/bin/python - <<'PY' 2>&1 | tee -a build/setup.log
           import jwt, time, os, json, urllib.request
           key_id, iss, prefix = os.environ["KEY_ID"], os.environ["ISSUER_ID"], os.environ["ID_PREFIX"]
           key = open(os.path.expanduser(f"~/private_keys/AuthKey_{key_id}.p8")).read()
