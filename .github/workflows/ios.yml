@@ -19,11 +19,12 @@ on:
   push:
     tags: ["v*"]
 
-# The runner image keeps several Xcodes but only the simulator runtimes that match the newer ones, and
-# actool needs a matching runtime even for a device build. So pick the newest Xcode 16 that is installed.
+# App Store Connect only accepts apps built with the iOS 26 SDK (Xcode 26 or later), and actool needs a
+# simulator runtime that matches the chosen Xcode. So pick the newest Xcode 26 installed, else the newest 16.
 env:
   PICK_XCODE: |
-    xc=$(ls -d /Applications/Xcode_16.*.app 2>/dev/null | sort -V | tail -1)
+    xc=$(ls -d /Applications/Xcode_26.*.app 2>/dev/null | sort -V | tail -1)
+    [ -n "$xc" ] || xc=$(ls -d /Applications/Xcode_16.*.app 2>/dev/null | sort -V | tail -1)
     if [ -n "$xc" ]; then sudo xcode-select -s "$xc"; fi
     xcodebuild -version | tr '\n' ' '; echo
     ls -d /Applications/Xcode*.app | tr '\n' ' '; echo
