@@ -30,8 +30,10 @@ Data Not Collected. Privacy Policy URL: `https://github.com/jxmils/virtus/blob/m
 
 **Header asset** (3840 x 1646): `build/store/header.png` (made by `Tools/check.sh`).
 
-**App Previews and Screenshots** (iPhone 6.9"): `build/store/1-today.png` to `5-widgets.png`, in that
-order. Leave iPad and iPhone Duo empty; Apple reuses the 6.9" set.
+**App Previews and Screenshots**: the preview video `build/store/preview-6.9.mp4` (886 x 1920, fits both
+iPhone slots) first, then the five screenshots in order. Two sets exist: `build/store/6.9/` (1320 x 2868, for
+the iPhone 6.9" tab) and `build/store/6.3/` (1206 x 2622, for the iPhone 6.1"/6.3" tab). Fill whichever tab
+App Store Connect shows first; leave iPad and iPhone Duo empty.
 
 **Promotional Text** (170):
 

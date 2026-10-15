@@ -74,9 +74,17 @@ func widgetsScene(model: AppModel, now: Date, caption: Bool) -> AnyView {
     .padding(.horizontal, 38))
 }
 
-/// App Store screenshots: a serif headline above the screen, 440x956 pt at 3x = 1320x2868 (iPhone 6.9").
+/// App Store screenshots: a serif headline above the screen, at 3x for two slots:
+/// iPhone 6.9" (440x956 pt = 1320x2868) and iPhone 6.1"/6.3" (402x874 pt = 1206x2622).
 @MainActor
-func store(into dir: URL) async {
+func store(into root: URL) async {
+    for (slot, size) in [("6.9", CGSize(width: 440, height: 956)), ("6.3", CGSize(width: 402, height: 874))] {
+        await store(into: root.appendingPathComponent(slot, isDirectory: true), size: size)
+    }
+}
+
+@MainActor
+func store(into dir: URL, size: CGSize) async {
     try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
     let tmp = FileManager.default.temporaryDirectory.appendingPathComponent("virtus-store-\(UUID().uuidString)")
     defer { try? FileManager.default.removeItem(at: tmp) }
@@ -89,21 +97,21 @@ func store(into dir: URL) async {
         ("4-profile", "Pin the lines that matter.", AnyView(ProfileScreen(preview: true).environment(model)), .profile),
         ("5-archive", "Every past day, kept.", AnyView(ArchiveScreen(preview: true).environment(model)), .archive),
     ]
-    let size = CGSize(width: 440, height: 956)
+    let k = size.width / 440   // scale the headline block with the canvas
     for (name, headline, view, route) in shots {
         let page = ZStack(alignment: .top) {
             VirtusPalette.black
             VStack(spacing: 22) {
-                VStack(spacing: 14) {
-                    Caps("Virtus", size: 11, color: VirtusPalette.inkFaint, tracking: 4)
+                VStack(spacing: 14 * k) {
+                    Caps("Virtus", size: 11 * k, color: VirtusPalette.inkFaint, tracking: 4 * k)
                     Text(headline)
-                        .font(VirtusFont.quote(34))
+                        .font(VirtusFont.quote(34 * k))
                         .foregroundStyle(VirtusPalette.ink)
                         .multilineTextAlignment(.center)
-                        .lineSpacing(4)
-                        .frame(width: 360, height: 96, alignment: .top)
+                        .lineSpacing(4 * k)
+                        .frame(width: 360 * k, height: 96 * k, alignment: .top)
                 }
-                .padding(.top, 56)
+                .padding(.top, 56 * k)
                 phoneScreen(view, route: route, size: size)
                     .clipShape(RoundedRectangle(cornerRadius: 56, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 56, style: .continuous).strokeBorder(Color.white.opacity(0.16), lineWidth: 1.5))
@@ -114,7 +122,7 @@ func store(into dir: URL) async {
         .frame(width: size.width, height: size.height)
         .environment(\.colorScheme, .dark)
         let px = writePNG(page, scale: 3, to: dir.appendingPathComponent("\(name).png"))
-        print("store \(name) \(Int(px.width))x\(Int(px.height))")
+        print("store \(dir.lastPathComponent)/\(name) \(Int(px.width))x\(Int(px.height))")
     }
 }
 
