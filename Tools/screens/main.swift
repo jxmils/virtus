@@ -111,12 +111,12 @@ func store(into dir: URL, size: CGSize) async {
                         .lineSpacing(4 * k)
                         .frame(width: 360 * k, height: 96 * k, alignment: .top)
                 }
-                .padding(.top, 56 * k)
+                .padding(.top, 48 * k)
                 phoneScreen(view, route: route, size: size)
                     .clipShape(RoundedRectangle(cornerRadius: 56, style: .continuous))
                     .overlay(RoundedRectangle(cornerRadius: 56, style: .continuous).strokeBorder(Color.white.opacity(0.16), lineWidth: 1.5))
-                    .scaleEffect(0.77, anchor: .top)
-                    .frame(width: size.width * 0.77, height: size.height * 0.77, alignment: .top)
+                    .scaleEffect(0.74, anchor: .top)
+                    .frame(width: size.width * 0.74, height: size.height * 0.74, alignment: .top)
             }
         }
         .frame(width: size.width, height: size.height)
