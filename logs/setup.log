@@ -1,0 +1,6 @@
+xcode: Xcode 26.3 Build version 17C529 
+missing secrets: none
+app id com.jasonmiller.Virtus: capabilities ['IN_APP_PURCHASE', 'APP_GROUPS']
+   app groups settings: null
+app id com.jasonmiller.Virtus.Widget: capabilities ['IN_APP_PURCHASE', 'APP_GROUPS']
+   app groups settings: null
