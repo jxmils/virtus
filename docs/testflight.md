@@ -2,8 +2,17 @@
 
 One-time setup, about ten minutes.
 
-1. **Register the app id.** developer.apple.com > Account > Identifiers > + > App IDs > App.
-   Description `Virtus`, Bundle ID explicit `com.jasonmiller.Virtus`, tick **App Groups**. Register.
+1. **Register the App Group and the two app ids.** developer.apple.com > Account > Identifiers.
+   - Use the menu at the top right of the list (it says App IDs) to switch to **App Groups**, then **+**.
+     Description `Virtus`, Identifier `group.com.jasonmiller.Virtus`. Register.
+   - Switch the menu back to **App IDs**, **+** > App IDs > App. Description `Virtus`, Bundle ID explicit
+     `com.jasonmiller.Virtus`, tick **App Groups** and press its **Edit/Configure** button to select
+     `group.com.jasonmiller.Virtus`. Register.
+   - Same again for the widget: Description `Virtus Widget`, Bundle ID explicit `com.jasonmiller.Virtus.Widget`,
+     App Groups ticked and configured to the same group. (If the id already exists because a build ran first,
+     open it, tick App Groups, Configure, pick the group, Save.)
+   Without the group assigned to both ids the archive fails with "Provisioning profile doesn't match the
+   entitlements file's value for the com.apple.security.application-groups entitlement".
 2. **Create the app record.** appstoreconnect.apple.com > My Apps > + > New App.
    iOS, name `Virtus` (or `Virtus Quotes` if taken), bundle id from step 1, SKU `virtus`.
 3. **Make an API key.** App Store Connect > Users and Access > Integrations > App Store Connect API >

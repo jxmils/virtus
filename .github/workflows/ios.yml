@@ -82,6 +82,9 @@ jobs:
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
             VIRTUS_ID_PREFIX="$ID_PREFIX" CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
             | tee build/archive.log | grep -E "error:|warning: .*sign|\*\* ARCHIVE" || true
+          if grep -q "application-groups entitlement" build/archive.log; then
+            echo "::error::The App Group group.$ID_PREFIX.Virtus is not assigned to both app ids in your developer account. See docs/testflight.md step 1."
+          fi
           test -d build/Virtus.xcarchive || { echo "::error::archive failed, see the archive log artifact"; exit 1; }
 
       - name: Upload to App Store Connect
