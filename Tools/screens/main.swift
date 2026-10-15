@@ -27,7 +27,7 @@ func store(into dir: URL) async {
 
     let widgets = VStack(alignment: .leading, spacing: 22) {
         Caps("On your Home Screen", size: 11, color: VirtusPalette.inkFaint, tracking: 3).padding(.top, 60)
-        VirtusWidgetContent(slot: WidgetSlot(date: now, quote: model.today), size: .large, pinned: true)
+        VirtusWidgetContent(slot: WidgetSlot(date: now, quote: model.today), size: .large, pinned: true, source: .pinned)
             .frame(width: 364, height: 382).background(VirtusPalette.black)
             .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).strokeBorder(VirtusPalette.hairline))

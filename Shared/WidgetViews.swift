@@ -11,7 +11,10 @@ enum VirtusWidgetSize {
 struct VirtusWidgetContent: View {
     var slot: WidgetSlot
     var size: VirtusWidgetSize
+    /// The quote is one of the user's pins (shows the gold mark).
     var pinned: Bool
+    /// What the widget was set to show; the large header says "Pinned" or the date accordingly.
+    var source: WidgetSource = .today
 
     var url: URL { VirtusLink.quote(slot.quote.id) }
 
@@ -96,7 +99,7 @@ struct VirtusWidgetContent: View {
 
     private var largeHeader: some View {
         HStack {
-            Caps(pinned ? "Pinned" : DateText.long(slot.date), size: 10, color: VirtusPalette.inkFaint, tracking: 2)
+            Caps(source == .pinned ? "Pinned" : DateText.long(slot.date), size: 10, color: VirtusPalette.inkFaint, tracking: 2)
             Spacer()
             if pinned { PinMark(size: 10) }
         }

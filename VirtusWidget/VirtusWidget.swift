@@ -34,6 +34,7 @@ struct VirtusEntry: TimelineEntry {
     let date: Date
     let slot: WidgetSlot
     let pinned: Bool
+    var source: WidgetSource = .today
 }
 
 struct VirtusProvider: AppIntentTimelineProvider {
@@ -53,7 +54,7 @@ struct VirtusProvider: AppIntentTimelineProvider {
         let profile = SharedStore.live.load()
         let source = configuration.show.source
         return WidgetPlan.slots(source: source, profile: profile, now: now).map {
-            VirtusEntry(date: $0.date, slot: $0, pinned: $0.hint == nil && profile.isPinned($0.quote.id))
+            VirtusEntry(date: $0.date, slot: $0, pinned: $0.hint == nil && profile.isPinned($0.quote.id), source: source)
         }
     }
 }
@@ -86,7 +87,7 @@ struct VirtusWidgetView: View {
     }
 
     var body: some View {
-        let content = VirtusWidgetContent(slot: entry.slot, size: size, pinned: entry.pinned)
+        let content = VirtusWidgetContent(slot: entry.slot, size: size, pinned: entry.pinned, source: entry.source)
         content
             .widgetURL(content.url)
             .containerBackground(for: .widget) {
