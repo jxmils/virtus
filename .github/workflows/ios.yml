@@ -53,10 +53,16 @@ jobs:
 
       - name: Check the secrets are set
         run: |
-          for v in KEY_ID ISSUER_ID TEAM_ID; do
-            [ -n "${!v}" ] || { echo "::error::secret for $v is missing (see docs/testflight.md)"; exit 1; }
-          done
-          [ -n "${{ secrets.APPSTORE_PRIVATE_KEY }}" ] || { echo "::error::APPSTORE_PRIVATE_KEY is missing"; exit 1; }
+          mkdir -p build
+          missing=""
+          [ -n "$KEY_ID" ] || missing="$missing APPSTORE_KEY_ID"
+          [ -n "$ISSUER_ID" ] || missing="$missing APPSTORE_ISSUER_ID"
+          [ -n "$TEAM_ID" ] || missing="$missing APPLE_TEAM_ID"
+          [ -n "${{ secrets.APPSTORE_PRIVATE_KEY }}" ] || missing="$missing APPSTORE_PRIVATE_KEY"
+          echo "xcode: $(xcodebuild -version | tr '\n' ' ')" > build/setup.log
+          echo "missing secrets:${missing:- none}" >> build/setup.log
+          cat build/setup.log
+          [ -z "$missing" ] || { echo "::error::missing secrets:$missing (see docs/testflight.md)"; exit 1; }
 
       - name: Install the App Store Connect API key
         env:
@@ -109,3 +115,32 @@ jobs:
         with:
           name: logs
           path: build/*.log
+
+  report:
+    name: Copy logs and renders to the ci-results branch
+    needs: [check, testflight]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+      - name: Push the results
+        run: |
+          mkdir -p out
+          {
+            echo "run: $GITHUB_RUN_NUMBER  id: $GITHUB_RUN_ID  ref: $GITHUB_REF_NAME  commit: ${GITHUB_SHA::7}"
+            echo "check: ${{ needs.check.result }}"
+            echo "testflight: ${{ needs.testflight.result }}"
+            echo "url: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > out/STATUS.txt
+          cat out/STATUS.txt
+          cd out
+          git init -q -b ci-results
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add -A
+          git commit -qm "Run $GITHUB_RUN_NUMBER: check ${{ needs.check.result }}, testflight ${{ needs.testflight.result }}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY" ci-results
