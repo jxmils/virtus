@@ -1,0 +1,494 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5B1D5F8B0000000000000003 /* VirtusWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5B1D5F8B0000000000000002 /* VirtusWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5B1D5F8B0000000000000004 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5B1D5F8B0000000000000012 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5B1D5F8B0000000000000011;
+			remoteInfo = VirtusWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5B1D5F8B0000000000000005 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5B1D5F8B0000000000000003 /* VirtusWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		5B1D5F8B0000000000000001 /* Virtus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Virtus.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B1D5F8B0000000000000002 /* VirtusWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VirtusWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5B1D5F8B0000000000000006 /* Exceptions for "Virtus" folder in "Virtus" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5B1D5F8B0000000000000010 /* Virtus */;
+		};
+		5B1D5F8B0000000000000007 /* Exceptions for "VirtusWidget" folder in "VirtusWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5B1D5F8B0000000000000011 /* VirtusWidgetExtension */;
+		};
+		5B1D5F8B0000000000000021 /* Exceptions for "Portraits" folder in "Virtus" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				PROMPT.md,
+			);
+			target = 5B1D5F8B0000000000000010 /* Virtus */;
+		};
+		5B1D5F8B0000000000000022 /* Exceptions for "Portraits" folder in "VirtusWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				PROMPT.md,
+			);
+			target = 5B1D5F8B0000000000000011 /* VirtusWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		5B1D5F8B0000000000000008 /* Virtus */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5B1D5F8B0000000000000006 /* Exceptions for "Virtus" folder in "Virtus" target */,
+			);
+			path = Virtus;
+			sourceTree = "<group>";
+		};
+		5B1D5F8B0000000000000009 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		5B1D5F8B000000000000000A /* VirtusWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5B1D5F8B0000000000000007 /* Exceptions for "VirtusWidget" folder in "VirtusWidgetExtension" target */,
+			);
+			path = VirtusWidget;
+			sourceTree = "<group>";
+		};
+		5B1D5F8B000000000000000B /* Entitlements */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Entitlements;
+			sourceTree = "<group>";
+		};
+		5B1D5F8B0000000000000023 /* Portraits */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5B1D5F8B0000000000000021 /* Exceptions for "Portraits" folder in "Virtus" target */,
+				5B1D5F8B0000000000000022 /* Exceptions for "Portraits" folder in "VirtusWidgetExtension" target */,
+			);
+			path = Portraits;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5B1D5F8B000000000000000C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B1D5F8B000000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5B1D5F8B000000000000000E = {
+			isa = PBXGroup;
+			children = (
+				5B1D5F8B0000000000000008 /* Virtus */,
+				5B1D5F8B0000000000000009 /* Shared */,
+				5B1D5F8B000000000000000A /* VirtusWidget */,
+				5B1D5F8B000000000000000B /* Entitlements */,
+				5B1D5F8B0000000000000023 /* Portraits */,
+				5B1D5F8B000000000000000F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5B1D5F8B000000000000000F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5B1D5F8B0000000000000001 /* Virtus.app */,
+				5B1D5F8B0000000000000002 /* VirtusWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5B1D5F8B0000000000000010 /* Virtus */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5B1D5F8B000000000000001F /* Build configuration list for PBXNativeTarget "Virtus" */;
+			buildPhases = (
+				5B1D5F8B0000000000000015 /* Sources */,
+				5B1D5F8B000000000000000C /* Frameworks */,
+				5B1D5F8B0000000000000013 /* Resources */,
+				5B1D5F8B0000000000000005 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5B1D5F8B0000000000000017 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5B1D5F8B0000000000000008 /* Virtus */,
+				5B1D5F8B0000000000000009 /* Shared */,
+				5B1D5F8B0000000000000023 /* Portraits */,
+			);
+			name = Virtus;
+			packageProductDependencies = (
+			);
+			productName = Virtus;
+			productReference = 5B1D5F8B0000000000000001 /* Virtus.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5B1D5F8B0000000000000011 /* VirtusWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5B1D5F8B0000000000000020 /* Build configuration list for PBXNativeTarget "VirtusWidgetExtension" */;
+			buildPhases = (
+				5B1D5F8B0000000000000016 /* Sources */,
+				5B1D5F8B000000000000000D /* Frameworks */,
+				5B1D5F8B0000000000000014 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5B1D5F8B000000000000000A /* VirtusWidget */,
+				5B1D5F8B0000000000000009 /* Shared */,
+				5B1D5F8B0000000000000023 /* Portraits */,
+			);
+			name = VirtusWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = VirtusWidgetExtension;
+			productReference = 5B1D5F8B0000000000000002 /* VirtusWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5B1D5F8B0000000000000012 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					5B1D5F8B0000000000000010 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					5B1D5F8B0000000000000011 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 5B1D5F8B000000000000001E /* Build configuration list for PBXProject "Virtus" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5B1D5F8B000000000000000E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 5B1D5F8B000000000000000F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5B1D5F8B0000000000000010 /* Virtus */,
+				5B1D5F8B0000000000000011 /* VirtusWidgetExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5B1D5F8B0000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B1D5F8B0000000000000014 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5B1D5F8B0000000000000015 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5B1D5F8B0000000000000016 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5B1D5F8B0000000000000017 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5B1D5F8B0000000000000011 /* VirtusWidgetExtension */;
+			targetProxy = 5B1D5F8B0000000000000004 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5B1D5F8B0000000000000018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				VIRTUS_ID_PREFIX = com.jasonmiller;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5B1D5F8B0000000000000019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				VIRTUS_ID_PREFIX = com.jasonmiller;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5B1D5F8B000000000000001A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/Virtus.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Virtus/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Virtus;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(VIRTUS_ID_PREFIX).Virtus";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		5B1D5F8B000000000000001B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Entitlements/Virtus.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Virtus/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Virtus;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(VIRTUS_ID_PREFIX).Virtus";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		5B1D5F8B000000000000001C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Entitlements/VirtusWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VirtusWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Virtus;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(VIRTUS_ID_PREFIX).Virtus.Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		5B1D5F8B000000000000001D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Entitlements/VirtusWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = VirtusWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Virtus;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(VIRTUS_ID_PREFIX).Virtus.Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5B1D5F8B000000000000001E /* Build configuration list for PBXProject "Virtus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B1D5F8B0000000000000018 /* Debug */,
+				5B1D5F8B0000000000000019 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5B1D5F8B000000000000001F /* Build configuration list for PBXNativeTarget "Virtus" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B1D5F8B000000000000001A /* Debug */,
+				5B1D5F8B000000000000001B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5B1D5F8B0000000000000020 /* Build configuration list for PBXNativeTarget "VirtusWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B1D5F8B000000000000001C /* Debug */,
+				5B1D5F8B000000000000001D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5B1D5F8B0000000000000012 /* Project object */;
+}
