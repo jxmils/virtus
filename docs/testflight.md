@@ -23,10 +23,15 @@ One-time setup, about ten minutes.
    - `APPSTORE_KEY_ID`: the Key ID
    - `APPSTORE_PRIVATE_KEY`: open the `.p8` in TextEdit and paste the whole thing, BEGIN and END lines included
    - `APPLE_TEAM_ID`: developer.apple.com > Account > Membership details > Team ID
-5. **Run it.** GitHub > Actions > iOS > Run workflow. Leave the defaults. About 15 minutes.
+5. **Run it.** GitHub > Actions > iOS > Run workflow. Leave the defaults. About 5 minutes.
+   (Pushing a tag like `v1.0-rc10` starts a run too.) The runner builds with its newest Xcode 26, which
+   App Store Connect requires since 2026; the build number is the run number.
 
 The build shows up in App Store Connect > TestFlight (processing takes another 10 to 30 minutes).
-Add yourself under Internal Testing, install the TestFlight app on your iPhone, and the app is on your phone.
+Then: TestFlight > Internal Testing > **+** > name the group (e.g. `Me`), add yourself as a tester, tick the
+build. Install the TestFlight app on your iPhone, accept the email invite, and Virtus installs from there.
+Builds before build 10 show "Missing Compliance": click Manage next to the build and answer No to the
+encryption question. Later builds carry the answer in Info.plist.
 
 To release: in App Store Connect pick that build on the version page, paste the text from `docs/app-store.md`,
 upload the screenshots from the workflow's `renders` artifact, and Submit for Review.

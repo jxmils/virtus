@@ -4,6 +4,8 @@
 <dict>
 	<key>VirtusAppGroup</key>
 	<string>group.$(VIRTUS_ID_PREFIX).Virtus</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
