@@ -1,42 +1,115 @@
 # App Store listing
 
-Paste these into App Store Connect. Plain text, no emojis.
+Everything for App Store Connect > Apps > Virtus > 1.0 Prepare for Submission. Plain text, no emojis.
+Copy each block as is. The competition (Motivation, The Stoic Way, Stoic Space, Stoic Day) sells the
+Lock Screen first, uses "stoic" as the search word, and nearly all charge a subscription. Virtus sells the
+same hook, then what they do not have: named sources, the black portrait look, and no subscription.
 
-**Name** (30 max): Virtus
-If "Virtus" is taken, use: Virtus Quotes
+## App Information page (left menu)
 
-**Subtitle** (30 max): One quotation a day
+**Name** (30): `Virtus`. If taken: `Virtus: Daily Quotes`
 
-**Category**: Lifestyle. Secondary: Education.
+**Subtitle** (30): `Daily Stoic quotes & widgets`
 
-**Age rating**: answer "None" to everything. 4+.
+**Primary category**: Lifestyle. **Secondary**: Education.
 
-**Description**
+**Content rights**: does not contain, show or access third-party content. (Quotations are public domain
+or short attributed excerpts.)
 
-One quotation a day from the men who earned their words: Marcus Aurelius, Seneca, Epictetus, Leonidas,
-Alexander, Caesar, Napoleon, Musashi, Churchill and more. Set in black with serif type and nothing else
-on the screen.
+**Age rating**: answer No/None to every question. Result 4+.
 
-Today: the day's quote, the same for everyone, new at midnight.
-Archive: every past day, so nothing is lost.
-Profile: pin the lines that matter to you and keep your streak.
-Widgets: today's quote or your pinned ones on the Home Screen and the Lock Screen.
-Reminder: a morning notification with the day's quote, if you want one.
-Share: a black card with the quote, ready for messages or Instagram.
+## Pricing and Availability
 
-658 quotations, each with its source. No account, no ads, no tracking. Everything stays on your phone.
+Free. All countries.
 
-**Keywords** (100 max):
-stoic,quotes,daily quote,motivation,marcus aurelius,seneca,discipline,widget,wisdom,philosophy
+## App Privacy
 
-**Support URL**: https://github.com/jxmils/virtus
-**Privacy Policy URL**: https://github.com/jxmils/virtus/blob/main/docs/privacy.md
+Data Not Collected. Privacy Policy URL: `https://github.com/jxmils/virtus/blob/main/docs/privacy.md`
 
-**App Privacy** questionnaire: "Data Not Collected".
+## Version 1.0 page
 
-**Copyright**: 2026 Jason Miller
+**Header asset** (3840 x 1646): `build/store/header.png` (made by `Tools/check.sh`).
 
-**Screenshots**: `Tools/check.sh` writes `build/store/*.png` at 1320x2868 (iPhone 6.9"). Upload them for
-the 6.9" slot; App Store Connect reuses them for the smaller sizes.
+**App Previews and Screenshots** (iPhone 6.9"): `build/store/1-today.png` to `5-widgets.png`, in that
+order. Leave iPad and iPhone Duo empty; Apple reuses the 6.9" set.
 
-**What's New** (1.0): First release.
+**Promotional Text** (170):
+
+```
+Marcus Aurelius, Seneca, Leonidas, Napoleon: one quotation a day, set in black. Pin the lines that matter, keep them on your Lock Screen. No ads, no account, no subscription.
+```
+
+**Description** (4,000):
+
+```
+One quotation a day, on your Lock Screen before you have opened anything else.
+
+Virtus is a quote app for men who like their words set in black: Marcus Aurelius, Seneca, Epictetus, Leonidas, Alexander, Caesar, Napoleon, Musashi, Churchill and the rest. One line a day, the same for everyone, new at midnight. Serif type on black, the author in small capitals, and nothing else on the screen.
+
+TODAY
+The day's quote with its author and source. Pin it, feature it on your widget, or share it as a black card.
+
+WIDGETS
+Home Screen widgets in three sizes and Lock Screen widgets. Edit a widget to show today's quote or the ones you pinned, which take turns through the day.
+
+ARCHIVE
+Every past day, so a line you missed is never gone.
+
+PROFILE
+The quotes you pinned, your streak, and one featured quote that leads your widget.
+
+REMINDER
+A morning notification with the day's quote, at the time you choose. Off by default.
+
+658 QUOTATIONS, EACH WITH ITS SOURCE
+Stoics, warriors, kings, philosophers and strategists: Marcus Aurelius' Meditations, Seneca's letters, Epictetus, Musashi's Book of Five Rings, the Spartans in Plutarch, Sun Tzu, Machiavelli, Nietzsche, Theodore Roosevelt, Churchill, Bruce Lee, Muhammad Ali. Misattributed internet lines are left out, and every quote names where it comes from.
+
+NO ADS, NO ACCOUNT, NO SUBSCRIPTION
+Nothing to sign up for and nothing to unlock. Your pins and settings stay on your phone.
+```
+
+**Keywords** (100, commas, no spaces):
+
+```
+stoicism,marcus aurelius,seneca,motivation,discipline,wisdom,philosophy,mindset,warrior,men
+```
+
+**Support URL**: `https://github.com/jxmils/virtus/issues`
+**Marketing URL**: `https://github.com/jxmils/virtus` (optional)
+**Version**: `1.0`
+**Copyright**: `2026 Jason Miller`
+**Routing App Coverage File**, **App Clip**, **iMessage App**, **Game Center**: leave empty.
+
+**Build**: Add Build, pick the newest (build 11 or later).
+
+## App Review Information
+
+**Sign-in required**: unticked. The app has no account.
+
+**Contact information**: your first name, last name, phone number and email. Apple only uses them to reach
+you during review.
+
+**Notes**:
+
+```
+Virtus shows one quotation a day and needs no account or sign-in.
+
+To see the widgets: hold an empty spot on the Home Screen, tap Edit > Add Widget, search Virtus, add any size. Hold the widget and tap Edit Widget to switch between "Today's quote" and "My pinned quotes". Lock Screen widgets are under Customise on the Lock Screen.
+
+The daily reminder (Profile > More) is off by default and asks for notification permission only when switched on.
+
+All quotations are public domain or short attributed excerpts, each shown with its source. The app collects no data; the privacy policy is at https://github.com/jxmils/virtus/blob/main/docs/privacy.md
+```
+
+**Attachment**: none.
+
+## App Store Version Release
+
+Choose **Automatically release this version**. The app goes live as soon as review passes, usually within
+a day or two. Pick Manual only if you want to time the launch.
+
+## What's New (1.0)
+
+```
+First release.
+```

@@ -74,8 +74,42 @@ func store(into dir: URL) async {
     }
 }
 
+/// The App Store product-page header: 1920x823 pt at 2x = 3840x1646. The Leonidas portrait fading into
+/// black on the left, one line of the app's own type on the right, no logo (the store overlays the icon).
+@MainActor
+func header(to path: String) {
+    Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
+    let quote = QuoteLibrary.all.first { $0.author == "Leonidas" && $0.text.hasPrefix("Come") }!
+    let view = ZStack(alignment: .leading) {
+        VirtusPalette.black
+        if let portrait = Portraits.image(for: quote, maxPixel: 2000) {
+            FadedPortrait(image: portrait, side: true).frame(width: 1920 * 0.46, height: 823)
+        }
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            VStack(alignment: .leading, spacing: 34) {
+                Caps("One quotation a day", size: 22, color: VirtusPalette.inkFaint, tracking: 9)
+                QuoteBlock(quote: quote, size: 92, showSource: false)
+            }
+            .frame(width: 1920 * 0.5)
+            .padding(.trailing, 120)
+        }
+    }
+    .frame(width: 1920, height: 823)
+    .environment(\.colorScheme, .dark)
+    let renderer = ImageRenderer(content: view)
+    renderer.scale = 2
+    guard let image = renderer.uiImage, let data = image.pngData() else { print("header render failed"); exit(1) }
+    try? data.write(to: URL(fileURLWithPath: path))
+    print("header \(Int(image.size.width * image.scale))x\(Int(image.size.height * image.scale))")
+}
+
 @MainActor
 func run() async {
+    if CommandLine.arguments.dropFirst().first == "--header" {
+        header(to: CommandLine.arguments.dropFirst(2).first ?? "build/store/header.png")
+        return
+    }
     if CommandLine.arguments.dropFirst().first == "--store" {
         await store(into: URL(fileURLWithPath: CommandLine.arguments.dropFirst(2).first ?? "build/store"))
         return

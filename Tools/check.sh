@@ -72,3 +72,4 @@ swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusScreens \
   Tools/screens/main.swift -o "$TMP/screens"
 "$TMP/screens" "$OUT/screens.png"
 "$TMP/screens" --store build/store
+"$TMP/screens" --header build/store/header.png
