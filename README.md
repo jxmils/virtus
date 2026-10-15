@@ -14,3 +14,5 @@ Every day has one quote, the same for everyone, in a fixed shuffled order with n
 The id of a quote is a hash of its text, so pins survive edits to the library.
 - `Portraits/`: optional `<author-slug>.jpg` per author (see `Portraits/PROMPT.md`). Shown fading into black
   on Today, the detail view, the share card and the large widget; authors without one stay text-only.
+- `.github/workflows/ios.yml` builds on a macOS runner and uploads to TestFlight with an App Store Connect
+  API key (setup in `docs/testflight.md`). `docs/app-store.md` has the listing text.

@@ -1,0 +1,111 @@
+# Builds Virtus on a macOS runner and uploads it to TestFlight. No Xcode needed on your own Mac.
+#
+# One-time setup (see docs/testflight.md): four repository secrets
+#   APPSTORE_ISSUER_ID, APPSTORE_KEY_ID, APPSTORE_PRIVATE_KEY (the .p8 file's contents), APPLE_TEAM_ID
+# Run it from the Actions tab (Run workflow), or push a tag like v1.0.
+name: iOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: Upload to TestFlight
+        type: boolean
+        default: true
+      id_prefix:
+        description: Bundle id prefix (bundle id = <prefix>.Virtus)
+        type: string
+        default: com.jasonmiller
+  push:
+    tags: ["v*"]
+
+env:
+  XCODE: /Applications/Xcode_16.2.app
+
+jobs:
+  check:
+    name: Type-check, self-test, renders
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo xcode-select -s "$XCODE" 2>/dev/null || echo "using the runner default Xcode"
+      - run: Tools/check.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renders
+          path: |
+            build/selftest/*.png
+            build/store/*.png
+
+  testflight:
+    name: Archive and upload to TestFlight
+    needs: check
+    if: ${{ github.event_name == 'push' || inputs.upload }}
+    runs-on: macos-15
+    env:
+      KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+      ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      ID_PREFIX: ${{ inputs.id_prefix || 'com.jasonmiller' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo xcode-select -s "$XCODE" 2>/dev/null || echo "using the runner default Xcode"
+
+      - name: Check the secrets are set
+        run: |
+          for v in KEY_ID ISSUER_ID TEAM_ID; do
+            [ -n "${!v}" ] || { echo "::error::secret for $v is missing (see docs/testflight.md)"; exit 1; }
+          done
+          [ -n "${{ secrets.APPSTORE_PRIVATE_KEY }}" ] || { echo "::error::APPSTORE_PRIVATE_KEY is missing"; exit 1; }
+
+      - name: Install the App Store Connect API key
+        env:
+          PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/private_keys
+          printf '%s\n' "$PRIVATE_KEY" > ~/private_keys/AuthKey_$KEY_ID.p8
+          chmod 600 ~/private_keys/AuthKey_$KEY_ID.p8
+
+      - name: Archive (cloud-managed signing)
+        run: |
+          xcodebuild -project Virtus.xcodeproj -scheme Virtus -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/Virtus.xcarchive archive \
+            -allowProvisioningUpdates -allowProvisioningDeviceRegistration \
+            -authenticationKeyPath ~/private_keys/AuthKey_$KEY_ID.p8 \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            VIRTUS_ID_PREFIX="$ID_PREFIX" CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            | tee build/archive.log | grep -E "error:|warning: .*sign|\*\* ARCHIVE" || true
+          test -d build/Virtus.xcarchive || { echo "::error::archive failed, see the archive log artifact"; exit 1; }
+
+      - name: Upload to App Store Connect
+        run: |
+          cat > build/ExportOptions.plist <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath build/Virtus.xcarchive \
+            -exportOptionsPlist build/ExportOptions.plist -exportPath build/export \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_$KEY_ID.p8 \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
+            | tee build/export.log | grep -E "error:|Upload|EXPORT" || true
+          grep -q "EXPORT SUCCEEDED" build/export.log || { echo "::error::upload failed, see the export log artifact"; exit 1; }
+          echo "Build $GITHUB_RUN_NUMBER uploaded. It appears in App Store Connect > TestFlight after processing (10-30 min)."
+
+      - name: Remove the API key
+        if: always()
+        run: rm -rf ~/private_keys
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: logs
+          path: build/*.log
