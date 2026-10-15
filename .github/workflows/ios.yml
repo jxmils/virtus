@@ -72,6 +72,36 @@ jobs:
           printf '%s\n' "$PRIVATE_KEY" > ~/private_keys/AuthKey_$KEY_ID.p8
           chmod 600 ~/private_keys/AuthKey_$KEY_ID.p8
 
+      - name: Inspect the app ids and drop stale Xcode-managed profiles
+        run: |
+          pip3 install -q pyjwt cryptography
+          python3 - <<'PY' 2>&1 | tee -a build/setup.log
+          import jwt, time, os, json, urllib.request
+          key_id, iss, prefix = os.environ["KEY_ID"], os.environ["ISSUER_ID"], os.environ["ID_PREFIX"]
+          key = open(os.path.expanduser(f"~/private_keys/AuthKey_{key_id}.p8")).read()
+          tok = jwt.encode({"iss": iss, "iat": int(time.time()), "exp": int(time.time()) + 600, "aud": "appstoreconnect-v1"},
+                           key, algorithm="ES256", headers={"kid": key_id})
+          def call(path, method="GET"):
+              r = urllib.request.Request("https://api.appstoreconnect.apple.com" + path, method=method,
+                                         headers={"Authorization": "Bearer " + tok})
+              with urllib.request.urlopen(r) as resp:
+                  body = resp.read()
+                  return json.loads(body) if body else {}
+          for bid in [f"{prefix}.Virtus", f"{prefix}.Virtus.Widget"]:
+              data = call(f"/v1/bundleIds?filter[identifier]={bid}")["data"]
+              if not data:
+                  print(f"app id {bid}: NOT REGISTERED"); continue
+              caps = call(f"/v1/bundleIds/{data[0]['id']}/bundleIdCapabilities")["data"]
+              print(f"app id {bid}: capabilities", [c["attributes"]["capabilityType"] for c in caps])
+          profiles = call("/v1/profiles?limit=200")["data"]
+          for p in profiles:
+              name = p["attributes"]["name"]
+              if "Virtus" in name:
+                  print("profile:", name, p["attributes"]["profileState"], "-> deleting so Xcode regenerates it")
+                  try: call(f"/v1/profiles/{p['id']}", "DELETE")
+                  except Exception as e: print("   could not delete:", e)
+          PY
+
       - name: Archive (cloud-managed signing)
         run: |
           xcodebuild -project Virtus.xcodeproj -scheme Virtus -configuration Release \
