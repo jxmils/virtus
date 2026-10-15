@@ -94,6 +94,9 @@ jobs:
                   print(f"app id {bid}: NOT REGISTERED"); continue
               caps = call(f"/v1/bundleIds/{data[0]['id']}/bundleIdCapabilities")["data"]
               print(f"app id {bid}: capabilities", [c["attributes"]["capabilityType"] for c in caps])
+              for c in caps:
+                  if c["attributes"]["capabilityType"] == "APP_GROUPS":
+                      print(f"   app groups settings: {json.dumps(c['attributes'].get('settings'))}")
           profiles = call("/v1/profiles?limit=200")["data"]
           for p in profiles:
               name = p["attributes"]["name"]
