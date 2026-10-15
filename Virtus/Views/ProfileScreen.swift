@@ -12,7 +12,12 @@ struct ProfileScreen: View {
         VStack(spacing: 0) {
             PageHeader(left: "Profile", right: model.profile.name.isEmpty ? "" : model.profile.name)
             if preview {
-                ProfileContent(preview: true, editName: beginEdit, showGuide: { guide = true }).padding(.horizontal, 28)
+                VStack(spacing: 0) {
+                    ProfileContent(preview: true, editName: beginEdit, showGuide: { guide = true }).padding(.horizontal, 28)
+                    Spacer(minLength: 0)
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
+                .clipped()
             } else {
                 ScrollView {
                     ProfileContent(preview: false, editName: beginEdit, showGuide: { guide = true }).padding(.horizontal, 28)
