@@ -121,7 +121,7 @@ jobs:
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
             VIRTUS_ID_PREFIX="$ID_PREFIX" CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
-            | tee build/archive.log | grep -E "error:|warning: .*sign|\*\* ARCHIVE" || true
+            2>&1 | tee build/archive.log | grep -E "error:|warning: .*sign|\*\* ARCHIVE" || true
           if grep -q "application-groups entitlement" build/archive.log; then
             echo "::error::The App Group group.$ID_PREFIX.Virtus is not assigned to both app ids in your developer account. See docs/testflight.md step 1."
           fi
@@ -145,7 +145,7 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyPath ~/private_keys/AuthKey_$KEY_ID.p8 \
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
-            | tee build/export.log | grep -E "error:|Upload|EXPORT" || true
+            2>&1 | tee build/export.log | grep -E "error|Error|Upload|EXPORT" || true
           grep -q "EXPORT SUCCEEDED" build/export.log || { echo "::error::upload failed, see the export log artifact"; exit 1; }
           echo "Build $GITHUB_RUN_NUMBER uploaded. It appears in App Store Connect > TestFlight after processing (10-30 min)."
 
