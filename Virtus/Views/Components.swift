@@ -85,6 +85,7 @@ struct QuoteRow: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 20)
+        .background { QuoteBackdrop(quote: quote) }
         .contentShape(Rectangle())
     }
 }

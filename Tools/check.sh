@@ -2,7 +2,7 @@
 # Checks Virtus without Xcode:
 #   1. type-checks the iOS app and the widget extension against the iOS SDK (as Mac Catalyst),
 #   2. lints the project file, Info.plists and entitlements,
-#   3. builds and runs the self-test (library, daily order, pins, streak, widget plan) and renders the widgets + icon,
+#   3. runs the self-test as Mac Catalyst (library, daily order, pins, streak, widget plan) and renders the widgets + icon,
 #   4. renders the app's screens to one PNG.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -23,7 +23,7 @@ if [[ -f "$STALE" && -f /Library/Developer/CommandLineTools/usr/include/swift/br
 YAML
   FLAGS+=(-vfsoverlay "$TMP/overlay.yaml" -Xcc -ivfsoverlay -Xcc "$TMP/overlay.yaml")
 fi
-IOS=(-sdk "$SDK" -target arm64-apple-ios18.0-macabi -swift-version 5 -parse-as-library
+IOS=(-sdk "$SDK" -target arm64-apple-ios18.0-macabi -swift-version 5 -parse-as-library -whole-module-optimization
      -Fsystem "$SDK/System/iOSSupport/System/Library/Frameworks" -I "$SDK/System/iOSSupport/usr/lib/swift")
 
 echo "== iOS app (type-check)"
@@ -59,11 +59,10 @@ PY
 echo "ok"
 
 echo "== Self-test"
-swiftc -swift-version 5 -target arm64-apple-macos14.0 "${FLAGS[@]}" -module-name VirtusSelfTest \
+swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusSelfTest \
   Shared/*.swift Virtus/Model/*.swift Tools/selftest/main.swift -o "$TMP/selftest"
 "$TMP/selftest" "$OUT"
 cp "$OUT/AppIcon.png" Virtus/Assets.xcassets/AppIcon.appiconset/AppIcon.png
-cp Portraits/*.jpg Portraits/*.png "$OUT/portraits/" 2>/dev/null || true
 echo "   $(find Portraits -maxdepth 1 \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' \) | wc -l | tr -d ' ') real portraits in Portraits/"
 
 echo "== Screens (Mac Catalyst render)"
@@ -71,7 +70,7 @@ swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusScreens \
   Shared/*.swift $(find Virtus -name '*.swift' ! -name VirtusApp.swift) \
   Tools/screens/main.swift -o "$TMP/screens"
 "$TMP/screens" "$OUT/screens.png"
-"$TMP/screens" --store build/store
-"$TMP/screens" --header build/store/header.png
-"$TMP/screens" --preview build/preview
-if command -v ffmpeg >/dev/null; then Tools/preview.sh build/preview build/store/preview-6.9.mp4; else echo "   (ffmpeg not installed: app preview video skipped)"; fi
+"$TMP/screens" --store "$OUT/store"
+"$TMP/screens" --header "$OUT/store/header.png"
+"$TMP/screens" --preview "$OUT/preview"
+if command -v ffmpeg >/dev/null; then Tools/preview.sh "$OUT/preview" "$OUT/store/preview-6.9.mp4"; else echo "   (ffmpeg not installed: app preview video skipped)"; fi

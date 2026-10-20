@@ -51,6 +51,7 @@ struct VirtusWidgetContent: View {
             }
         }
         .padding(14)
+        .background { QuoteBackdrop(quote: slot.quote) }
     }
 
     private var medium: some View {
@@ -71,6 +72,7 @@ struct VirtusWidgetContent: View {
             }
         }
         .padding(16)
+        .background { QuoteBackdrop(quote: slot.quote) }
     }
 
     @ViewBuilder private var large: some View {

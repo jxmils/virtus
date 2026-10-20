@@ -2,13 +2,17 @@ import Foundation
 import CoreGraphics
 import ImageIO
 
-/// Optional portraits: `Portraits/<author-slug>.jpg` (or .png) in the app bundle. A quote whose author has
-/// one is shown beside it, fading into black; the rest stay text-only.
+/// Author portraits take priority over shared themed artwork. All art is bundled for offline use.
 enum Portraits {
     /// Where to look besides the bundle (the self-test and the screen renders point this at a folder).
     nonisolated(unsafe) static var directory: URL?
 
-    private static let cache = NSCache<NSString, CGImage>()
+    private static let cache: NSCache<NSString, CGImage> = {
+        let cache = NSCache<NSString, CGImage>()
+        cache.totalCostLimit = 16 * 1024 * 1024
+        cache.countLimit = 8
+        return cache
+    }()
 
     /// "Niccolò Machiavelli" -> "niccolo-machiavelli", "T. E. Lawrence" -> "t-e-lawrence".
     static func slug(for author: String) -> String {
@@ -31,12 +35,20 @@ enum Portraits {
     static func url(for author: String) -> URL? {
         let slug = slug(for: author)
         guard !slug.isEmpty else { return nil }
+        if let portrait = resource(named: slug) { return portrait }
+        let theme = QuoteArtwork.theme(for: author).rawValue
+        if let artwork = resource(named: theme) { return artwork }
+        return resource(named: QuoteArtwork.Theme.spiritualWisdom.rawValue)
+    }
+
+    private static func resource(named name: String) -> URL? {
         for ext in ["jpg", "jpeg", "png"] {
             if let dir = directory {
-                let file = dir.appendingPathComponent("\(slug).\(ext)")
+                let file = dir.appendingPathComponent("\(name).\(ext)")
                 if FileManager.default.fileExists(atPath: file.path) { return file }
             }
-            if let file = Bundle.main.url(forResource: slug, withExtension: ext) { return file }
+            if let file = Bundle.main.url(forResource: name, withExtension: ext) { return file }
+            if let file = Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Portraits") { return file }
         }
         return nil
     }

@@ -42,7 +42,8 @@ jobs:
           name: renders
           path: |
             build/selftest/*.png
-            build/store/*.png
+            build/selftest/artwork-coverage.csv
+            build/selftest/store/**
 
   testflight:
     name: Archive and upload to TestFlight

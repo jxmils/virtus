@@ -10,8 +10,8 @@ func storeModel(tmp: URL) -> (AppModel, Date, Calendar) {
     var cal = Calendar(identifier: .gregorian)
     cal.timeZone = TimeZone(identifier: "Europe/London")!
     Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
-    let leonidasDay = (0..<QuoteLibrary.all.count).first { DailyQuote.quote(day: $0).author == "Leonidas" } ?? 0
-    let now = cal.date(byAdding: .day, value: leonidasDay, to: cal.startOfDay(for: DailyQuote.epoch))!.addingTimeInterval(9 * 3600)
+    let sampleDay = (0..<QuoteLibrary.all.count).first { DailyQuote.quote(day: $0).author == "Marcus Aurelius" } ?? 0
+    let now = cal.date(byAdding: .day, value: sampleDay, to: cal.startOfDay(for: DailyQuote.epoch))!.addingTimeInterval(9 * 3600)
     let model = AppModel(env: VirtusEnvironment(shared: SharedStore(root: tmp), now: { now }, calendar: cal))
     model.start()
     model.setName("Jason")
@@ -226,7 +226,7 @@ func run() async {
     let env = VirtusEnvironment(shared: SharedStore(root: tmp), now: { now }, calendar: cal)
     let fresh = AppModel(env: VirtusEnvironment(shared: SharedStore(root: tmp.appendingPathComponent("fresh")), now: { now }, calendar: cal))
     let outPath = CommandLine.arguments.dropFirst().first ?? "screens.png"
-    Portraits.directory = URL(fileURLWithPath: outPath).deletingLastPathComponent().appendingPathComponent("portraits")
+    Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
     let model = AppModel(env: env)
     model.start()
     model.setName("Jason")

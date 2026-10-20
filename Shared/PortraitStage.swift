@@ -1,5 +1,32 @@
 import SwiftUI
 
+/// A quiet artwork layer for compact quotes; the foreground text keeps its full width.
+struct QuoteBackdrop: View {
+    var quote: Quote
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .trailing) {
+                Color.black
+                if let image = Portraits.image(for: quote, maxPixel: 520) {
+                    Image(decorative: image, scale: 1)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: geo.size.width * 0.62, height: geo.size.height, alignment: .top)
+                        .clipped()
+                        .opacity(0.42)
+                }
+                LinearGradient(stops: [.init(color: .black, location: 0.2),
+                                       .init(color: .black.opacity(0.72), location: 0.55),
+                                       .init(color: .black.opacity(0.25), location: 1)],
+                               startPoint: .leading, endPoint: .trailing)
+            }
+            .clipped()
+        }
+        .accessibilityHidden(true)
+    }
+}
+
 /// A portrait fading into black with the quote set against it: beside the figure for short quotes, under it
 /// for long ones. Without a portrait it is just the quote, centred.
 struct PortraitStage: View {

@@ -201,7 +201,7 @@ func run(out: URL) async {
           && Portraits.slug(for: "Søren Kierkegaard") == "soren-kierkegaard" && Portraits.slug(for: "Alfred, Lord Tennyson") == "alfred-lord-tennyson"
           && Portraits.slug(for: "George S. Patton") == "george-s-patton", "author slugs: lowercase ascii, dashes, no doubles")
     check(Portraits.image(for: today, maxPixel: 400) == nil && !Portraits.has(today), "no portrait file means text-only")
-    let portraits = out.appendingPathComponent("portraits", isDirectory: true)
+    let portraits = tmp.appendingPathComponent("portrait-fixtures", isDirectory: true)
     try? FileManager.default.createDirectory(at: portraits, withIntermediateDirectories: true)
     for (i, slug) in ["napoleon-bonaparte", "epictetus", "michel-de-montaigne", "marcus-aurelius"].enumerated() {
         makePortrait(seed: i, to: portraits.appendingPathComponent("\(slug).jpg"))
@@ -220,6 +220,30 @@ func run(out: URL) async {
     }
     let unknown = listed.filter { !authors.contains($0) }
     check(listed.count >= 40 && unknown.isEmpty, "every file name in PROMPT.md matches an author in the library \(unknown)")
+
+    // Production artwork must cover the entire library. Keep synthetic decoder fixtures out of previews.
+    Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
+    check(Set(QuoteArtwork.authors.keys) == Set(all.map(\.author)), "every library author has exactly one explicit artwork theme")
+    let uncovered = all.filter { !Portraits.has($0) }
+    check(uncovered.isEmpty, "bundled artwork covers all \(all.count) quotes (\(uncovered.count) missing)")
+    let undecodeable = Set(all.map(\.author)).sorted().filter { author in
+        let quote = all.first { $0.author == author }!
+        guard let image = Portraits.image(for: quote, maxPixel: 520) else { return true }
+        return max(image.width, image.height) > 520
+    }
+    check(undecodeable.isEmpty, "all authors' actual artwork decodes within the widget pixel limit: \(undecodeable)")
+    check(Portraits.url(for: "An author added later")?.lastPathComponent == "spiritual-wisdom.jpg", "new authors get shared fallback artwork")
+    check(Portraits.url(for: "Alexander the Great")?.lastPathComponent == "alexander-the-great.jpg", "an author portrait takes priority over themed art")
+    let missingThemes = QuoteArtwork.Theme.allCases.filter { theme in
+        !FileManager.default.fileExists(atPath: Portraits.directory!.appendingPathComponent("\(theme.rawValue).jpg").path)
+    }
+    check(missingThemes.isEmpty, "all \(QuoteArtwork.Theme.allCases.count) theme resources are present: \(missingThemes)")
+
+    let coverage = "author,quotes,theme,asset\n" + Set(all.map(\.author)).sorted().map { author in
+        let name = author.replacingOccurrences(of: "\"", with: "\"\"")
+        return "\"\(name)\",\(all.filter { $0.author == author }.count),\(QuoteArtwork.theme(for: author).rawValue),\(Portraits.url(for: author)?.lastPathComponent ?? "MISSING")"
+    }.joined(separator: "\n") + "\n"
+    try? coverage.write(to: out.appendingPathComponent("artwork-coverage.csv"), atomically: true, encoding: .utf8)
 
     // Renders
     let long = all.max { $0.text.count < $1.text.count }!
@@ -252,6 +276,26 @@ func run(out: URL) async {
     render(ShareCard(quote: today), scale: 0.5, to: out.appendingPathComponent("share.png"))
     let stacked = all.first { $0.author == "Epictetus" && $0.text.count > 150 }!
     render(ShareCard(quote: stacked), scale: 0.5, to: out.appendingPathComponent("share-long.png"))
+    let themes = QuoteArtwork.Theme.allCases
+    let gallery = VStack(spacing: 20) {
+        ForEach(0..<4, id: \.self) { row in
+            HStack(alignment: .top, spacing: 20) {
+                ForEach(0..<4, id: \.self) { column in
+                    let index = row * 4 + column
+                    if index < themes.count {
+                        let theme = themes[index]
+                        let quote = all.filter { QuoteArtwork.theme(for: $0.author) == theme }.min { $0.text.count < $1.text.count }!
+                        VStack(spacing: 10) {
+                            Text(theme.rawValue).foregroundStyle(.white).font(.caption)
+                            PortraitStage(quote: quote, portrait: Portraits.image(for: quote, maxPixel: 800), size: 30)
+                                .frame(width: 330, height: 560).background(Color.black)
+                        }
+                    }
+                }
+            }
+        }
+    }.padding(20).background(Color(rgb: 0x303030))
+    render(gallery, scale: 1, to: out.appendingPathComponent("artwork-gallery.png"))
     render(AppIconArt().frame(width: 1024, height: 1024), scale: 1, to: out.appendingPathComponent("AppIcon.png"))
 
     print(failures == 0 ? "SELFTEST PASSED" : "SELFTEST FAILED (\(failures))")

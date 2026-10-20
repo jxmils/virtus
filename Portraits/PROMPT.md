@@ -1,5 +1,9 @@
 # Virtus portrait prompt
 
+The app now bundles fourteen shared themes for the entire quote library. Their exact production prompts
+are saved in `docs/artwork-prompts.json`; author assignments are in `Shared/QuoteArtwork.swift`.
+The prompts below remain available for optional author-specific portraits, which take priority over themes.
+
 Keep the STYLE block identical for every image. Change only the SUBJECT line.
 Save each result as `Portraits/<author-slug>.jpg`, 4:5 (1080x1350 or larger), e.g. `marcus-aurelius.jpg`.
 

@@ -12,7 +12,10 @@ pinned ones. No account, no server: everything lives in the App Group that the w
 
 Every day has one quote, the same for everyone, in a fixed shuffled order with no author two days running.
 The id of a quote is a hash of its text, so pins survive edits to the library.
-- `Portraits/`: optional `<author-slug>.jpg` per author (see `Portraits/PROMPT.md`). Shown fading into black
-  on Today, the detail view, the share card and the large widget; authors without one stay text-only.
+- `Portraits/`: bundled artwork fading into black on Today, the detail view, the share card and the large
+  widget, with subtle backgrounds in archive rows, pins and compact Home Screen widgets. Fourteen shared
+  themes cover all 658 quotes and 149 authors; individual `<author-slug>.jpg`
+  portraits take priority. `Shared/QuoteArtwork.swift` assigns themes; new authors use the olive branch.
+  These shared sculptures illustrate ideas rather than depict the authors. Prompts are in `docs/artwork-prompts.json`.
 - `.github/workflows/ios.yml` builds on a macOS runner and uploads to TestFlight with an App Store Connect
   API key (setup in `docs/testflight.md`). `docs/app-store.md` has the listing text.
