@@ -80,7 +80,7 @@ jobs:
           printf '%s\n' "$PRIVATE_KEY" > ~/private_keys/AuthKey_$KEY_ID.p8
           chmod 600 ~/private_keys/AuthKey_$KEY_ID.p8
 
-      - name: Inspect the app ids and drop stale Xcode-managed profiles
+      - name: Inspect the app ids
         run: |
           python3 -m venv build/venv 2>&1 | tee -a build/setup.log
           build/venv/bin/pip install -q pyjwt cryptography 2>&1 | tee -a build/setup.log
@@ -105,29 +105,38 @@ jobs:
               for c in caps:
                   if c["attributes"]["capabilityType"] == "APP_GROUPS":
                       print(f"   app groups settings: {json.dumps(c['attributes'].get('settings'))}")
-          profiles = call("/v1/profiles?limit=200")["data"]
-          for p in profiles:
-              name = p["attributes"]["name"]
-              if "Virtus" in name:
-                  print("profile:", name, p["attributes"]["profileState"], "-> deleting so Xcode regenerates it")
-                  try: call(f"/v1/profiles/{p['id']}", "DELETE")
-                  except Exception as e: print("   could not delete:", e)
           PY
 
-      - name: Archive (cloud-managed signing)
+      - name: Archive (local ad-hoc signature; distribution signing happens at export)
         run: |
           xcodebuild -project Virtus.xcodeproj -scheme Virtus -configuration Release \
             -destination 'generic/platform=iOS' -archivePath build/Virtus.xcarchive archive \
-            -allowProvisioningUpdates -allowProvisioningDeviceRegistration \
-            -authenticationKeyPath ~/private_keys/AuthKey_$KEY_ID.p8 \
-            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" \
             DEVELOPMENT_TEAM="$TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            CODE_SIGN_IDENTITY=- AD_HOC_CODE_SIGNING_ALLOWED=YES \
             VIRTUS_ID_PREFIX="$ID_PREFIX" CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
             2>&1 | tee build/archive.log | grep -E "error:|warning: .*sign|\*\* ARCHIVE" || true
           if grep -q "application-groups entitlement" build/archive.log; then
             echo "::error::The App Group group.$ID_PREFIX.Virtus is not assigned to both app ids in your developer account. See docs/testflight.md step 1."
           fi
-          test -d build/Virtus.xcarchive || { echo "::error::archive failed, see the archive log artifact"; exit 1; }
+          grep -q 'ARCHIVE SUCCEEDED' build/archive.log || { echo "::error::archive failed, see the archive log artifact"; exit 1; }
+
+      - name: Verify shared storage entitlements and bundled artwork
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, plistlib, subprocess
+          app = pathlib.Path("build/Virtus.xcarchive/Products/Applications/Virtus.app")
+          widget = app / "PlugIns/VirtusWidgetExtension.appex"
+          group = "group." + os.environ["ID_PREFIX"] + ".Virtus"
+          for bundle in [app, widget]:
+              subprocess.run(["codesign", "--verify", "--strict", str(bundle)], check=True)
+              data = subprocess.check_output(["codesign", "-d", "--entitlements", ":-", str(bundle)], stderr=subprocess.DEVNULL)
+              entitlements = plistlib.loads(data)
+              assert group in entitlements.get("com.apple.security.application-groups", []), f"Missing App Group in {bundle}"
+              resources = {p.name for p in bundle.rglob("*.jpg") if "PlugIns" not in p.relative_to(bundle).parts}
+              expected = {p.name for p in pathlib.Path("Portraits").glob("*.jpg")}
+              assert expected <= resources, f"Missing artwork in {bundle}: {sorted(expected - resources)}"
+              print(f"Verified {bundle.name}: shared App Group and all {len(expected)} artwork files")
+          PY
 
       - name: Upload to App Store Connect
         run: |

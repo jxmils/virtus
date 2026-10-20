@@ -28,6 +28,9 @@ One-time setup, about ten minutes.
    App Store Connect requires since 2026; the build number is the run number.
 
 The build shows up in App Store Connect > TestFlight (processing takes another 10 to 30 minutes).
+The archive uses a local ad-hoc signature; the export step applies Apple's cloud-managed distribution
+signature and uploads the build. This avoids issuing a fresh development certificate for every temporary
+GitHub runner. The workflow checks both targets' App Group entitlements and bundled artwork before export.
 Then: TestFlight > Internal Testing > **+** > name the group (e.g. `Me`), add yourself as a tester, tick the
 build. Install the TestFlight app on your iPhone, accept the email invite, and Virtus installs from there.
 Builds before build 10 show "Missing Compliance": click Manage next to the build and answer No to the
