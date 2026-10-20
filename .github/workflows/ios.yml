@@ -37,9 +37,15 @@ jobs:
       - uses: actions/checkout@v4
       - run: eval "$PICK_XCODE"
       - run: Tools/check.sh
+      - name: Verify check outputs exist
+        run: |
+          test -s build/selftest/artwork-coverage.csv
+          test -s build/selftest/screens.png
+          test -s build/selftest/store/6.9/1-today.png
       - uses: actions/upload-artifact@v4
         with:
           name: renders
+          if-no-files-found: error
           path: |
             build/selftest/*.png
             build/selftest/artwork-coverage.csv

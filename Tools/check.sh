@@ -27,10 +27,10 @@ IOS=(-sdk "$SDK" -target arm64-apple-ios18.0-macabi -swift-version 5 -parse-as-l
      -Fsystem "$SDK/System/iOSSupport/System/Library/Frameworks" -I "$SDK/System/iOSSupport/usr/lib/swift")
 
 echo "== iOS app (type-check)"
-swiftc -typecheck "${IOS[@]}" "${FLAGS[@]}" -module-name Virtus \
+swiftc -typecheck "${IOS[@]}" ${FLAGS[@]+"${FLAGS[@]}"} -module-name Virtus \
   Shared/*.swift $(find Virtus -name '*.swift')
 echo "== Widget extension (type-check)"
-swiftc -typecheck "${IOS[@]}" "${FLAGS[@]}" -module-name VirtusWidgetExtension \
+swiftc -typecheck "${IOS[@]}" ${FLAGS[@]+"${FLAGS[@]}"} -module-name VirtusWidgetExtension \
   Shared/*.swift VirtusWidget/*.swift
 
 echo "== Project files"
@@ -59,14 +59,14 @@ PY
 echo "ok"
 
 echo "== Self-test"
-swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusSelfTest \
+swiftc "${IOS[@]/-parse-as-library/}" ${FLAGS[@]+"${FLAGS[@]}"} -module-name VirtusSelfTest \
   Shared/*.swift Virtus/Model/*.swift Tools/selftest/main.swift -o "$TMP/selftest"
 "$TMP/selftest" "$OUT"
 cp "$OUT/AppIcon.png" Virtus/Assets.xcassets/AppIcon.appiconset/AppIcon.png
 echo "   $(find Portraits -maxdepth 1 \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' \) | wc -l | tr -d ' ') real portraits in Portraits/"
 
 echo "== Screens (Mac Catalyst render)"
-swiftc "${IOS[@]/-parse-as-library/}" "${FLAGS[@]}" -module-name VirtusScreens \
+swiftc "${IOS[@]/-parse-as-library/}" ${FLAGS[@]+"${FLAGS[@]}"} -module-name VirtusScreens \
   Shared/*.swift $(find Virtus -name '*.swift' ! -name VirtusApp.swift) \
   Tools/screens/main.swift -o "$TMP/screens"
 "$TMP/screens" "$OUT/screens.png"
