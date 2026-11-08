@@ -134,8 +134,8 @@ struct WidgetGuideContent: View {
                 .buttonStyle(.plain)
             }
             step(1, "Hold an empty spot on your Home Screen, then tap Edit and Add Widget.")
-            step(2, "Search for Virtus and pick a size.")
-            step(3, "Hold the widget and tap Edit Widget to show today’s quote or your pinned ones.")
+            step(2, "Search for Virtus. Choose Quotes or Year in Dots, then pick a size and tap Add Widget.")
+            step(3, "For the quote widget, hold it and tap Edit Widget to show today’s quote or your pinned ones. Year in Dots updates each day.")
             Hairline()
             Text("For the Lock Screen: hold the Lock Screen, tap Customise, then add Virtus.")
                 .font(VirtusFont.body(15)).foregroundStyle(VirtusPalette.inkSoft)
