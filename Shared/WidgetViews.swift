@@ -1,6 +1,57 @@
 import SwiftUI
 import WidgetKit
 
+/// One dot for every day of the year, ordered left to right, top to bottom.
+struct YearInDotsContent: View {
+    var progress: YearProgress
+    var size: VirtusWidgetSize
+
+    private var compact: Bool { size == .small }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: compact ? 8 : 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(String(progress.year)).font(VirtusFont.numeral(compact ? 22 : 30))
+                Spacer(minLength: 4)
+                if !compact { Caps("Year in dots", size: 9, color: VirtusPalette.inkSoft, tracking: 1.7) }
+            }
+            GeometryReader { geometry in
+                let columns = size == .medium ? 31 : 20
+                let rows = (progress.totalDays + columns - 1) / columns
+                let cellWidth = geometry.size.width / CGFloat(columns)
+                let cellHeight = geometry.size.height / CGFloat(rows)
+                let diameter = min(cellWidth, cellHeight) * 0.66
+                Canvas { context, _ in
+                    for day in 0..<progress.totalDays {
+                        let x = (CGFloat(day % columns) + 0.5) * cellWidth - diameter / 2
+                        let y = (CGFloat(day / columns) + 0.5) * cellHeight - diameter / 2
+                        let dot = Path(ellipseIn: CGRect(x: x, y: y, width: diameter, height: diameter))
+                        if day < progress.daysPassed {
+                            context.fill(dot, with: .color(VirtusPalette.ink))
+                        } else {
+                            context.stroke(dot, with: .color(VirtusPalette.inkSoft.opacity(0.7)), lineWidth: compact ? 0.65 : 0.85)
+                        }
+                    }
+                }
+            }
+            .accessibilityHidden(true)
+            HStack {
+                Text("\(progress.daysPassed) passed")
+                Spacer(minLength: 4)
+                Text("\(progress.daysLeft) left").foregroundStyle(VirtusPalette.inkSoft)
+            }
+            .font(VirtusFont.label(compact ? 10 : 12))
+            .monospacedDigit()
+        }
+        .foregroundStyle(VirtusPalette.ink)
+        .padding(compact ? 14 : 18)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(VirtusPalette.black)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(progress.year). \(progress.daysPassed) days completed. \(progress.daysLeft) days left, including today. Filled dots are completed days; outlined dots are days left.")
+    }
+}
+
 enum VirtusWidgetSize {
     case small, medium, large, circular, rectangular, inline
 

@@ -220,6 +220,27 @@ func run(out: URL) async {
     check(Reminders.plan(profile: model.profile, now: now, calendar: cal).isEmpty, "off means no reminders")
 
     // Widget plan
+    let newYear = YearProgress(date: date(2026, 1, 1), calendar: cal)
+    check(newYear.year == 2026 && newYear.totalDays == 365 && newYear.daysPassed == 0 && newYear.daysLeft == 365,
+          "year dots begin with 365 outlined days on January 1")
+    let yearEnd = YearProgress(date: date(2026, 12, 31), calendar: cal)
+    check(yearEnd.daysPassed == 364 && yearEnd.daysLeft == 1, "today remains available on December 31")
+    let leapDay = YearProgress(date: date(2028, 2, 29), calendar: cal)
+    check(leapDay.totalDays == 366 && leapDay.daysPassed == 59 && leapDay.daysLeft == 307,
+          "leap years include a separate dot for February 29")
+    check(YearProgress(date: date(2100, 1, 1), calendar: cal).totalDays == 365,
+          "century years follow the Gregorian leap-year rule")
+    let yearTimeline = YearProgress.timelineDates(now: date(2026, 12, 31), calendar: cal)
+    let reset = YearProgress(date: yearTimeline[1], calendar: cal)
+    check(yearTimeline.count == 8 && reset.year == 2027 && reset.daysPassed == 0,
+          "year widget timeline resets at local New Year's midnight")
+    let dstTimeline = YearProgress.timelineDates(now: date(2026, 3, 28), calendar: cal)
+    check(dstTimeline[2].timeIntervalSince(dstTimeline[1]) == 23 * 3600 && cal.component(.hour, from: dstTimeline[2]) == 0,
+          "year widget refreshes at local midnight across daylight saving")
+    var auckland = cal
+    auckland.timeZone = TimeZone(identifier: "Pacific/Auckland")!
+    check(YearProgress(date: date(2026, 12, 31, 12), calendar: auckland).year == 2027,
+          "year progress respects the reader's local time zone")
     let todaySlots = WidgetPlan.slots(source: .today, profile: model.profile, now: now, calendar: cal)
     check(todaySlots.count == 4 && todaySlots[0].quote.id == DailyQuote.quote(for: now, calendar: cal).id, "today widget: now plus the next 3 midnights")
     check(todaySlots[1].date == cal.startOfDay(for: date(2026, 10, 21)) && todaySlots[1].quote.id == DailyQuote.quote(day: 293).id,
@@ -291,6 +312,14 @@ func run(out: URL) async {
     let long = all.max { $0.text.count < $1.text.count }!
     let samples: [(VirtusWidgetSize, CGSize)] = [(.small, CGSize(width: 170, height: 170)), (.medium, CGSize(width: 364, height: 170)),
                                                  (.large, CGSize(width: 364, height: 382))]
+    let yearSheet = HStack(alignment: .top, spacing: 24) {
+        ForEach(samples.indices, id: \.self) { i in
+            YearInDotsContent(progress: YearProgress(date: date(2026, 11, 9), calendar: cal), size: samples[i].0)
+                .frame(width: samples[i].1.width, height: samples[i].1.height)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        }
+    }.padding(24).background(Color(rgb: 0x303030))
+    render(yearSheet, to: out.appendingPathComponent("year-widgets.png"))
     let sheet = VStack(alignment: .leading, spacing: 24) {
         ForEach([today, long, other], id: \.id) { q in
             HStack(alignment: .top, spacing: 24) {

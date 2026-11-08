@@ -6,6 +6,48 @@ import AppIntents
 struct VirtusWidgetBundle: WidgetBundle {
     var body: some Widget {
         VirtusQuoteWidget()
+        VirtusYearWidget()
+    }
+}
+
+struct VirtusYearEntry: TimelineEntry {
+    let date: Date
+    var progress: YearProgress { YearProgress(date: date) }
+}
+
+struct VirtusYearProvider: TimelineProvider {
+    func placeholder(in context: Context) -> VirtusYearEntry { VirtusYearEntry(date: .now) }
+
+    func getSnapshot(in context: Context, completion: @escaping (VirtusYearEntry) -> Void) {
+        completion(VirtusYearEntry(date: .now))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<VirtusYearEntry>) -> Void) {
+        completion(Timeline(entries: YearProgress.timelineDates(now: .now).map { VirtusYearEntry(date: $0) }, policy: .atEnd))
+    }
+}
+
+struct VirtusYearWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "VirtusYearInDots", provider: VirtusYearProvider()) { entry in
+            VirtusYearWidgetView(entry: entry)
+        }
+        .configurationDisplayName("Year in Dots")
+        .description("One dot for every day. Filled dots are days passed; outlined dots are days left, including today.")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .contentMarginsDisabled()
+    }
+}
+
+struct VirtusYearWidgetView: View {
+    @Environment(\.widgetFamily) private var family
+    let entry: VirtusYearEntry
+
+    var body: some View {
+        YearInDotsContent(progress: entry.progress,
+                          size: family == .systemLarge ? .large : family == .systemMedium ? .medium : .small)
+            .containerBackground(for: .widget) { VirtusPalette.black }
+            .widgetURL(VirtusLink.today)
     }
 }
 

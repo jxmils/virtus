@@ -12,6 +12,8 @@ pinned ones. No account, no server: everything lives in the App Group that the w
 
 Every day has one quote, the same for everyone, in a fixed shuffled order with no author two days running.
 The id of a quote is a hash of its text, so pins survive edits to the library.
+The separate **Year in Dots** widget comes in small, medium and large sizes. Each completed day is a
+filled dot; days left, including today, are outlined. It updates at local midnight and includes leap days.
 The Archive starts at public release on **November 9, 2026**, configured in `Shared/VirtusConfig.swift`.
 It stays empty through launch day. At local midnight on November 10, the November 9 quote becomes its
 first entry; it then grows by one day, retaining up to 90 past published days. Pre-release dates are

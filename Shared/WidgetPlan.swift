@@ -1,5 +1,25 @@
 import Foundation
 
+/// Calendar-year progress. Today is still available, so only completed days are filled.
+struct YearProgress: Equatable {
+    let year: Int
+    let totalDays: Int
+    let daysPassed: Int
+    var daysLeft: Int { totalDays - daysPassed }
+
+    init(date: Date, calendar: Calendar = .autoupdatingCurrent) {
+        var civil = Calendar(identifier: .gregorian)
+        civil.timeZone = calendar.timeZone
+        year = civil.component(.year, from: date)
+        totalDays = civil.range(of: .day, in: .year, for: date)!.count
+        daysPassed = (civil.ordinality(of: .day, in: .year, for: date) ?? 1) - 1
+    }
+
+    static func timelineDates(now: Date, calendar: Calendar = .autoupdatingCurrent) -> [Date] {
+        [now] + (1...7).compactMap { calendar.date(byAdding: .day, value: $0, to: calendar.startOfDay(for: now)) }
+    }
+}
+
 /// What a widget shows: today's quote, or the quotes you pinned, in turn.
 enum WidgetSource: String, Codable, CaseIterable {
     case today, pinned
