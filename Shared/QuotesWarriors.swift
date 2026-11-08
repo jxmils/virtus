@@ -6,6 +6,7 @@ extension QuoteData {
 
 extension QuoteData {
     static let spartans: [Quote] = [
+        Quote("By force a way is made.", "Virgil", "Aeneid, 2.494; quoted in Seneca, Letter 37 (Gummere)"),
         Quote("Come and take them.", "Leonidas", "Thermopylae, 480 BC"),
         Quote("Then we will fight in the shade.", "Dienekes", "Herodotus, on the Persian arrows"),
         Quote("Come back with your shield, or on it.", "A Spartan mother", "Plutarch, Sayings of Spartan Women"),
@@ -67,7 +68,7 @@ extension QuoteData {
     ]
 
     static let commanders: [Quote] = [
-        Quote("I will either find a way or make one.", "Hannibal", "Crossing the Alps"),
+        Quote("I will either find a way or make one.", "Hannibal", "Traditionally attributed; not verified in an ancient source"),
         Quote("Many things which nature makes difficult become easy to the man who uses his brains.", "Hannibal", "Livy"),
         Quote("Impossible is a word to be found only in the dictionary of fools.", "Napoleon Bonaparte"),
         Quote("Never interrupt your enemy when he is making a mistake.", "Napoleon Bonaparte"),

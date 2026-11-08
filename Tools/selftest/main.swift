@@ -129,7 +129,7 @@ func run(out: URL) async {
     model.togglePin(today)
     check(model.isPinned(today) && model.featured?.id == today.id, "pinning features the first pin")
     check(reloads == 2 && store.load().pinned == [today.id], "pins are saved to the App Group and reload the widget")
-    let other = model.archive(days: 3)[1].quote
+    let other = DailyQuote.quote(for: date(2026, 10, 13), calendar: cal)
     model.pin(other)
     check(model.pinnedQuotes.map(\.id) == [today.id, other.id], "the featured quote stays first")
     model.feature(other)
@@ -165,10 +165,49 @@ func run(out: URL) async {
     check(VirtusLink.quoteID(in: URL(string: "virtus://today")!) == nil, "virtus://today is not a quote link")
 
     // Archive
-    let archive = model.archive(days: 90)
-    check(archive.count == 90 && archive.first!.date < now && cal.isDate(archive[0].date, inSameDayAs: date(2026, 10, 19)),
-          "the archive lists 90 past days, newest first")
-    check(archive[0].quote.id == DailyQuote.quote(for: date(2026, 10, 19), calendar: cal).id, "each day shows the quote it had")
+    check(model.archive().isEmpty, "pre-release history is never archived")
+    var archiveNow = date(2026, 11, 8, 23, 59)
+    var archiveEnv = env
+    archiveEnv.now = { archiveNow }
+    archiveEnv.releaseDay = DateComponents(year: 2026, month: 11, day: 9)
+    let releasedModel = AppModel(env: archiveEnv)
+    check(releasedModel.archive().isEmpty, "archive is empty just before release")
+    check(releasedModel.issueNumber == nil, "no issue number is shown before release")
+    archiveNow = date(2026, 11, 9, 23, 59)
+    check(releasedModel.archive().isEmpty, "launch day's quote stays in Today until midnight")
+    check(releasedModel.issueNumber == 1, "release day's visible quote number is No. 1")
+    archiveNow = date(2026, 11, 10, 0, 0)
+    let firstArchive = releasedModel.archive()
+    check(releasedModel.issueNumber == 2, "visible quote numbering advances with published days")
+    check(firstArchive.count == 1 && firstArchive.first?.date == date(2026, 11, 9, 0, 0),
+          "November 9 becomes the first archived day at midnight on November 10")
+    check(firstArchive.first?.quote.id == DailyQuote.quote(for: date(2026, 11, 9), calendar: cal).id,
+          "archived quotes match what Today and widgets published")
+    archiveNow = date(2026, 11, 12)
+    check(releasedModel.archive().map(\.date) == [date(2026, 11, 11, 0, 0), date(2026, 11, 10, 0, 0), date(2026, 11, 9, 0, 0)],
+          "archive grows one published day at a time, newest first")
+    check(releasedModel.archive(days: 0).isEmpty && releasedModel.archive(days: -1).isEmpty,
+          "non-positive archive limits return no entries")
+    check(releasedModel.archive(days: 2).count == 2, "short archive requests respect their limit")
+    archiveNow = date(2027, 3, 30)
+    let archive = releasedModel.archive()
+    check(archive.count == 90 && archive.first?.date == date(2027, 3, 29, 0, 0),
+          "archive retains at most 90 published days, including across daylight saving")
+    check(releasedModel.profile.pinned == model.profile.pinned,
+          "release gating preserves existing saved pins")
+    for zone in ["America/Los_Angeles", "Pacific/Auckland"] {
+        var local = cal
+        local.timeZone = TimeZone(identifier: zone)!
+        var localEnv = archiveEnv
+        localEnv.calendar = local
+        let launch = local.date(from: DateComponents(year: 2026, month: 11, day: 9))!
+        archiveNow = launch.addingTimeInterval(23 * 3600)
+        let localModel = AppModel(env: localEnv)
+        check(localModel.archive().isEmpty, "launch day is local in \(zone)")
+        archiveNow = local.date(byAdding: .day, value: 1, to: launch)!
+        check(localModel.archive().count == 1 && localModel.archive().first?.date == launch,
+              "first archive entry appears at local midnight in \(zone)")
+    }
 
     // Reminders
     model.setReminder(on: true, hour: 7, minute: 30)
@@ -207,19 +246,22 @@ func run(out: URL) async {
         makePortrait(seed: i, to: portraits.appendingPathComponent("\(slug).jpg"))
     }
     Portraits.directory = portraits
-    check(Portraits.has(today) && today.author == "Napoleon Bonaparte", "a portrait is found by the author's slug")
-    let small = Portraits.image(for: today, maxPixel: 400)
+    let portraitQuote = all.first { $0.author == "Napoleon Bonaparte" }!
+    check(Portraits.has(portraitQuote), "a portrait is found by the author's slug")
+    let small = Portraits.image(for: portraitQuote, maxPixel: 400)
     check(small != nil && max(small!.width, small!.height) <= 400, "portraits decode no larger than asked (widgets stay small)")
-    check(Portraits.image(for: today, maxPixel: 400) === small, "decoded portraits are cached")
-    check(Portraits.image(for: today, maxPixel: 1400).map { max($0.width, $0.height) } == 1350, "and full size for the app")
-    let prompt = (try? String(contentsOfFile: "Portraits/PROMPT.md", encoding: .utf8)) ?? ""
-    let authors = Set(all.map { Portraits.slug(for: $0.author) })
-    let listed = prompt.split(separator: "\n").compactMap { line -> String? in
-        guard let first = line.split(separator: " ").first, first.allSatisfy({ $0.isLowercase || $0 == "-" }), first.contains("-") || authors.contains(String(first)) else { return nil }
-        return String(first)
-    }
-    let unknown = listed.filter { !authors.contains($0) }
-    check(listed.count >= 40 && unknown.isEmpty, "every file name in PROMPT.md matches an author in the library \(unknown)")
+    check(Portraits.image(for: portraitQuote, maxPixel: 400) === small, "decoded portraits are cached")
+    check(Portraits.image(for: portraitQuote, maxPixel: 1400).map { max($0.width, $0.height) } == 1350, "and full size for the app")
+    let promptData = try! Data(contentsOf: URL(fileURLWithPath: "docs/artwork-prompts.json"))
+    let prompts = try! JSONSerialization.jsonObject(with: promptData) as! [[String: String]]
+    let documentedAssets = Set(prompts.compactMap { $0["asset"] })
+    let bundledAssets = Set(try! FileManager.default.contentsOfDirectory(atPath: "Portraits").filter { $0.hasSuffix(".jpg") })
+    check(documentedAssets == bundledAssets && prompts.count == documentedAssets.count,
+          "every bundled artwork has exactly one production prompt or reuse record")
+    check(prompts.allSatisfy { entry in
+        if let source = entry["source"] { return documentedAssets.contains(source) }
+        return !(entry["prompt"] ?? "").isEmpty && !(entry["generator"] ?? "").isEmpty
+    }, "artwork provenance points to a documented source or generation prompt")
 
     // Production artwork must cover the entire library. Keep synthetic decoder fixtures out of previews.
     Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")

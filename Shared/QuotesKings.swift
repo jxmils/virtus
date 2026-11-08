@@ -2,6 +2,7 @@ import Foundation
 
 extension QuoteData {
     static let kings: [Quote] = [
+        Quote("I will not steal a victory.", "Alexander the Great", "Plutarch, Life of Alexander, 31 (Dryden translation)"),
         Quote("There is nothing impossible to him who will try.", "Alexander the Great"),
         Quote("Remember, upon the conduct of each depends the fate of all.", "Alexander the Great"),
         Quote("Toil and risk are the price of glory, but it is a lovely thing to live with courage and to die leaving an everlasting fame.", "Alexander the Great", "Arrian, Anabasis"),

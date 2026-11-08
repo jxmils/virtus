@@ -8,7 +8,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT=${1:-build/selftest}
 mkdir -p "$OUT"
-TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
+TMP=$(mktemp -d "$OUT/check.XXXXXX"); trap 'rm -rf "$TMP"' EXIT
 SDK=$(xcrun --show-sdk-path 2>/dev/null || echo /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk)
 
 # The Command Line Tools ship two module maps that both define SwiftBridging; hide the stale one.

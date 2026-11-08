@@ -12,7 +12,7 @@ struct TodayScreen: View {
                 PortraitStage(quote: quote, portrait: Portraits.image(for: quote, maxPixel: 1400),
                               size: QuoteSizing.size(for: quote.text), caption: DateText.long(model.now))
                     .ignoresSafeArea(edges: .top)
-                PageHeader(left: "Virtus", right: "No. \(model.todayNumber + 1)")
+                PageHeader(left: "Virtus", right: model.issueNumber.map { "No. \($0)" } ?? "")
             }
             QuoteActions(quote: quote)
                 .padding(.bottom, 10)

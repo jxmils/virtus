@@ -10,7 +10,11 @@ func storeModel(tmp: URL) -> (AppModel, Date, Calendar) {
     var cal = Calendar(identifier: .gregorian)
     cal.timeZone = TimeZone(identifier: "Europe/London")!
     Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
-    let sampleDay = (0..<QuoteLibrary.all.count).first { DailyQuote.quote(day: $0).author == "Marcus Aurelius" } ?? 0
+    let release = cal.date(from: VirtusConfig.releaseDay)!
+    let firstSampleDay = DailyQuote.dayNumber(for: release, calendar: cal) + 7
+    let sampleDay = (firstSampleDay..<(firstSampleDay + QuoteLibrary.all.count)).first {
+        DailyQuote.quote(day: $0).author == "Marcus Aurelius"
+    } ?? firstSampleDay
     let now = cal.date(byAdding: .day, value: sampleDay, to: cal.startOfDay(for: DailyQuote.epoch))!.addingTimeInterval(9 * 3600)
     let model = AppModel(env: VirtusEnvironment(shared: SharedStore(root: tmp), now: { now }, calendar: cal))
     model.start()
@@ -222,9 +226,11 @@ func run() async {
     defer { try? FileManager.default.removeItem(at: tmp) }
     var cal = Calendar(identifier: .gregorian)
     cal.timeZone = TimeZone(identifier: "Europe/London")!
-    let now = cal.date(from: DateComponents(year: 2026, month: 10, day: 15, hour: 9))!
+    let release = cal.date(from: VirtusConfig.releaseDay)!
+    let now = cal.date(byAdding: .day, value: 12, to: release)!.addingTimeInterval(9 * 3600)
     let env = VirtusEnvironment(shared: SharedStore(root: tmp), now: { now }, calendar: cal)
     let fresh = AppModel(env: VirtusEnvironment(shared: SharedStore(root: tmp.appendingPathComponent("fresh")), now: { now }, calendar: cal))
+    let launch = AppModel(env: VirtusEnvironment(shared: SharedStore(root: tmp.appendingPathComponent("launch")), now: { release }, calendar: cal))
     let outPath = CommandLine.arguments.dropFirst().first ?? "screens.png"
     Portraits.directory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("Portraits")
     let model = AppModel(env: env)
@@ -248,6 +254,7 @@ func run() async {
         ("quote, no portrait", AnyView(QuoteDetail(quote: seneca, close: {}).environment(model))),
         ("quote (widget tap)", AnyView(QuoteDetail(quote: marcus, close: {}).environment(model))),
         ("archive", AnyView(ArchiveScreen(preview: true).environment(model))),
+        ("archive (launch day)", AnyView(ArchiveScreen(preview: true).environment(launch))),
         ("profile", AnyView(ProfileScreen(preview: true).environment(model))),
         ("profile (fresh)", AnyView(ProfileScreen(preview: true).environment(fresh))),
         ("add a widget", AnyView(WidgetGuideContent(close: {}).environment(model))),

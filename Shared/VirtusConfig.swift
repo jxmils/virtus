@@ -9,6 +9,8 @@ enum VirtusConfig {
     static let maxName = 24
     /// How many past days the Archive shows.
     static let archiveDays = 90
+    /// Public release day in each reader's local time. Pre-release days never enter the Archive.
+    static let releaseDay = DateComponents(year: 2026, month: 11, day: 9)
 }
 
 /// Deep links used by the widgets.

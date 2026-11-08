@@ -2,6 +2,7 @@ import Foundation
 
 extension QuoteData {
     static let epictetus: [Quote] = [
+        Quote("You may fetter my leg, but my will not even Zeus himself can overpower.", "Epictetus", "Discourses, 1.1 (George Long translation)"),
         Quote("It is not what happens to you, but how you react to it that matters.", "Epictetus", "Enchiridion"),
         Quote("No man is free who is not master of himself.", "Epictetus", "Discourses"),
         Quote("First say to yourself what you would be, and then do what you have to do.", "Epictetus", "Discourses"),

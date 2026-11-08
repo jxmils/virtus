@@ -98,12 +98,12 @@ struct FadedPortrait: View {
             Image(decorative: image, scale: 1)
                 .resizable()
                 .scaledToFill()
-                .frame(width: geo.size.width, height: geo.size.height, alignment: side ? .top : .center)
+                .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
                 .clipped()
-                .overlay(Color.black.opacity(0.18))
+                .overlay(Color.black.opacity(0.04))
                 .overlay(
                     LinearGradient(stops: side
-                                   ? [.init(color: .clear, location: 0.3), .init(color: .black, location: 1)]
+                                   ? [.init(color: .clear, location: 0.42), .init(color: .black, location: 1)]
                                    : [.init(color: .clear, location: 0.45), .init(color: .black, location: 1)],
                                    startPoint: side ? .leading : .top, endPoint: side ? .trailing : .bottom))
                 .overlay(
@@ -111,7 +111,7 @@ struct FadedPortrait: View {
                                    ? [.init(color: .clear, location: 0.55), .init(color: .black, location: 1)]
                                    : [.init(color: .clear, location: 0.4), .init(color: .black.opacity(0.85), location: 1)],
                                    startPoint: side ? .top : .leading, endPoint: side ? .bottom : .trailing))
-                .overlay(LinearGradient(colors: [.black.opacity(0.8), .clear], startPoint: .top,
+                .overlay(LinearGradient(colors: [.black.opacity(0.35), .clear], startPoint: .top,
                                         endPoint: UnitPoint(x: 0.5, y: side ? 0.5 : 0.32)))
         }
     }

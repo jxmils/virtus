@@ -12,10 +12,15 @@ pinned ones. No account, no server: everything lives in the App Group that the w
 
 Every day has one quote, the same for everyone, in a fixed shuffled order with no author two days running.
 The id of a quote is a hash of its text, so pins survive edits to the library.
+The Archive starts at public release on **November 9, 2026**, configured in `Shared/VirtusConfig.swift`.
+It stays empty through launch day. At local midnight on November 10, the November 9 quote becomes its
+first entry; it then grows by one day, retaining up to 90 past published days. Pre-release dates are
+never backfilled. This cutoff does not change daily quote selection, widgets, reminders, or saved pins.
+Today's visible issue number starts at No. 1 on release day and is hidden beforehand.
 - `Portraits/`: bundled artwork fading into black on Today, the detail view, the share card and the large
   widget, with subtle backgrounds in archive rows, pins and compact Home Screen widgets. Fourteen shared
-  themes cover all 658 quotes and 149 authors; individual `<author-slug>.jpg`
+  themes cover all 664 quotes and 149 authors; individual `<author-slug>.jpg`
   portraits take priority. `Shared/QuoteArtwork.swift` assigns themes; new authors use the olive branch.
-  These shared sculptures illustrate ideas rather than depict the authors. Prompts are in `docs/artwork-prompts.json`.
+  These shared marble figures and painted portraits illustrate ideas rather than depict the authors. Prompts are in `docs/artwork-prompts.json`.
 - `.github/workflows/ios.yml` builds on a macOS runner and uploads to TestFlight with an App Store Connect
   API key (setup in `docs/testflight.md`). `docs/app-store.md` has the listing text.

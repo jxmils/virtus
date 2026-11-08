@@ -6,6 +6,7 @@ struct VirtusEnvironment {
     var shared: SharedStore
     var now: () -> Date = Date.init
     var calendar: Calendar = .autoupdatingCurrent
+    var releaseDay: DateComponents = VirtusConfig.releaseDay
     var reloadWidgets: () -> Void = {}
     var scheduleReminders: (Profile, Date) -> Void = { _, _ in }
 }
@@ -43,6 +44,12 @@ final class AppModel {
     var now: Date { env.now() }
     var calendar: Calendar { env.calendar }
     var todayNumber: Int { DailyQuote.dayNumber(for: now, calendar: calendar) }
+    /// Visible issue numbering begins with No. 1 on release day.
+    var issueNumber: Int? {
+        guard let release = releaseDate else { return nil }
+        let days = calendar.dateComponents([.day], from: release, to: calendar.startOfDay(for: now)).day ?? -1
+        return days >= 0 ? days + 1 : nil
+    }
     var today: Quote { DailyQuote.quote(for: now, calendar: calendar) }
     var streak: Int { profile.streak(today: todayNumber) }
     var daysOpened: Int { Set(profile.openedDays).count }
@@ -74,12 +81,23 @@ final class AppModel {
         return max(1, next.timeIntervalSince(now) + 1)
     }
 
-    /// Past days, newest first, with the quote each one had.
+    /// Published days since public release, newest first. Today is not archived yet.
     func archive(days: Int = VirtusConfig.archiveDays) -> [(date: Date, quote: Quote)] {
-        (1...max(1, days)).compactMap { d in
-            guard let date = calendar.date(byAdding: .day, value: -d, to: calendar.startOfDay(for: now)) else { return nil }
+        guard days > 0, let release = releaseDate else { return [] }
+        let today = calendar.startOfDay(for: now)
+        let publishedDays = calendar.dateComponents([.day], from: release, to: today).day ?? 0
+        let count = min(days, publishedDays)
+        guard count > 0 else { return [] }
+        return (1...count).compactMap { d in
+            guard let date = calendar.date(byAdding: .day, value: -d, to: today), date >= release else { return nil }
             return (date, DailyQuote.quote(for: date, calendar: calendar))
         }
+    }
+
+    private var releaseDate: Date? {
+        var releaseCalendar = Calendar(identifier: .gregorian)
+        releaseCalendar.timeZone = calendar.timeZone
+        return releaseCalendar.date(from: env.releaseDay)
     }
 
     func isPinned(_ quote: Quote) -> Bool { profile.isPinned(quote.id) }

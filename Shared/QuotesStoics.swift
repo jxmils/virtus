@@ -56,6 +56,9 @@ extension QuoteData {
     ]
 
     static let seneca: [Quote] = [
+        Quote("You cannot escape necessities, but you can overcome them.", "Seneca", "Letters to Lucilius, 37.3 (Gummere translation)"),
+        Quote("If reason becomes your ruler, you will become ruler over many.", "Seneca", "Letters to Lucilius, 37.4 (Gummere; excerpt)"),
+        Quote("Nature has brought us forth brave of spirit.", "Seneca", "Letters to Lucilius, 104.23 (Gummere; excerpt)"),
         Quote("We suffer more often in imagination than in reality.", "Seneca", "Letters to Lucilius"),
         Quote("It is not that we have a short time to live, but that we waste a lot of it.", "Seneca", "On the Shortness of Life"),
         Quote("Difficulties strengthen the mind, as labour does the body.", "Seneca", "Letters to Lucilius"),
