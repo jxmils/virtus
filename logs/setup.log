@@ -1,0 +1,9 @@
+xcode: Xcode 26.3 Build version 17C529 
+missing secrets: none
+
+[notice] A new release of pip is available: 26.2.2 -> 26.3
+[notice] To update, run: /Users/runner/work/virtus/virtus/build/venv/bin/python3.15 -m pip install --upgrade pip
+app id com.jasonmiller.Virtus: capabilities ['IN_APP_PURCHASE', 'APP_GROUPS']
+   app groups settings: null
+app id com.jasonmiller.Virtus.Widget: capabilities ['IN_APP_PURCHASE', 'APP_GROUPS']
+   app groups settings: null
