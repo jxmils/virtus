@@ -31,77 +31,68 @@ struct VirtusWidgetContent: View {
 
     private var text: String { "\u{201C}\(slot.quote.text)\u{201D}" }
 
-    private var small: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let hint = slot.hint {
-                Text(hint).font(VirtusFont.body(14)).foregroundStyle(VirtusPalette.inkSoft)
-                    .fixedSize(horizontal: false, vertical: true)
-            } else {
-                Text(text)
-                    .font(VirtusFont.quote(WidgetPlan.fontSize(for: slot.quote.text, base: 17, floor: 11)))
+    private var small: some View { homeWidget(base: 23, floor: 13, padding: 12) }
+    private var medium: some View { homeWidget(base: 27, floor: 15, padding: 14) }
+    private var large: some View { homeWidget(base: 36, floor: 21, padding: 18) }
+
+    /// Fill the widget canvas with artwork; text gets the full usable width, including for long quotes.
+    private func homeWidget(base: CGFloat, floor: CGFloat, padding: CGFloat) -> some View {
+        ZStack {
+            widgetArtwork
+            VStack(alignment: .leading, spacing: size == .large ? 12 : 7) {
+                if size == .large { largeHeader }
+                Text(slot.hint ?? text)
+                    .font(VirtusFont.quote(slot.hint == nil
+                                          ? WidgetPlan.fontSize(for: slot.quote.text, base: base, floor: floor)
+                                          : base * 0.75))
                     .foregroundStyle(VirtusPalette.ink)
-                    .lineSpacing(2)
-                    .minimumScaleFactor(0.6)
+                    .shadow(color: .black.opacity(0.7), radius: 2, y: 1)
+                    .lineSpacing(size == .large ? 4 : 2)
+                    .minimumScaleFactor(0.55)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                    .layoutPriority(1)
+                HStack(spacing: 6) {
+                    Caps(slot.quote.author, size: size == .small ? 9 : 11,
+                         color: VirtusPalette.ink, tracking: size == .small ? 1 : 1.6)
+                        .lineLimit(1).minimumScaleFactor(0.65)
+                    Spacer(minLength: 0)
+                    if pinned && size != .large { PinMark(size: 10) }
+                }
             }
-            Spacer(minLength: 0)
-            HStack(spacing: 6) {
-                Caps(slot.quote.author, size: 9, color: VirtusPalette.inkSoft, tracking: 1.4).lineLimit(1).minimumScaleFactor(0.7)
-                Spacer(minLength: 0)
-                if pinned { PinMark(size: 9) }
-            }
+            .padding(padding)
         }
-        .padding(14)
-        .background { QuoteBackdrop(quote: slot.quote) }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
     }
 
-    private var medium: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Rectangle().fill(VirtusPalette.gold.opacity(pinned ? 0.9 : 0)).frame(width: 2)
-            VStack(alignment: .leading, spacing: 8) {
-                if let hint = slot.hint {
-                    Text(hint).font(VirtusFont.body(15)).foregroundStyle(VirtusPalette.inkSoft)
-                } else {
-                    Text(text)
-                        .font(VirtusFont.quote(WidgetPlan.fontSize(for: slot.quote.text, base: 19, floor: 12)))
-                        .foregroundStyle(VirtusPalette.ink)
-                        .lineSpacing(3)
-                        .minimumScaleFactor(0.6)
+    private var widgetArtwork: some View {
+        GeometryReader { geo in
+            ZStack {
+                VirtusPalette.black
+                if let portrait = Portraits.image(for: slot.quote, maxPixel: 520) {
+                    let scale = max(geo.size.width / CGFloat(portrait.width), geo.size.height / CGFloat(portrait.height))
+                    let height = CGFloat(portrait.height) * scale
+                    Image(decorative: portrait, scale: 1)
+                        .resizable()
+                        .frame(width: CGFloat(portrait.width) * scale, height: height)
+                        .offset(y: -(height - geo.size.height) * (size == .medium ? 0.12 : 0))
+                        .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+                        .clipped()
                 }
-                Spacer(minLength: 0)
-                Caps(slot.quote.author, size: 10, color: VirtusPalette.inkSoft, tracking: 1.8).lineLimit(1)
+                // A continuous shade keeps full-bleed figures legible behind white type.
+                LinearGradient(stops: [
+                    .init(color: .black.opacity(size == .large ? 0.18 : 0.42), location: 0),
+                    .init(color: .black.opacity(0.38), location: 0.38),
+                    .init(color: .black.opacity(0.82), location: 1)
+                ], startPoint: .top, endPoint: .bottom)
             }
         }
-        .padding(16)
-        .background { QuoteBackdrop(quote: slot.quote) }
-    }
-
-    @ViewBuilder private var large: some View {
-        if slot.hint == nil, let portrait = Portraits.image(for: slot.quote, maxPixel: 520) {
-            ZStack(alignment: .top) {
-                PortraitStage(quote: slot.quote, portrait: portrait,
-                              size: WidgetPlan.fontSize(for: slot.quote.text, base: 24, floor: 15),
-                              showSource: false, inset: 18, sideLimit: 110)
-                largeHeader.padding(20)
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 0) {
-                largeHeader
-                Spacer(minLength: 12)
-                if let hint = slot.hint {
-                    Text(hint).font(VirtusFont.body(17)).foregroundStyle(VirtusPalette.inkSoft)
-                } else {
-                    QuoteBlock(quote: slot.quote, size: WidgetPlan.fontSize(for: slot.quote.text, base: 26, floor: 16), showSource: true)
-                        .minimumScaleFactor(0.7)
-                }
-                Spacer(minLength: 12)
-            }
-            .padding(20)
-        }
+        .accessibilityHidden(true)
     }
 
     private var largeHeader: some View {
         HStack {
-            Caps(source == .pinned ? "Pinned" : DateText.long(slot.date), size: 10, color: VirtusPalette.inkFaint, tracking: 2)
+            Caps(source == .pinned ? "Pinned" : DateText.long(slot.date), size: 10, color: VirtusPalette.ink, tracking: 2)
             Spacer()
             if pinned { PinMark(size: 10) }
         }
