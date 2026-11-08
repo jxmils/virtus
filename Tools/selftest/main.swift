@@ -19,6 +19,21 @@ func writePNG(_ image: CGImage, to url: URL) {
     CGImageDestinationFinalize(dest)
 }
 
+/// Catch blank text in headless renders rather than accepting a PNG containing only the dot grid.
+func hasVisibleInk(_ url: URL, in rect: CGRect) -> Bool {
+    guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+          let image = CGImageSourceCreateImageAtIndex(source, 0, nil)?.cropping(to: rect),
+          let context = CGContext(data: nil, width: image.width, height: image.height,
+                                  bitsPerComponent: 8, bytesPerRow: image.width * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+    context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+    guard let pixels = context.data?.assumingMemoryBound(to: UInt8.self) else { return false }
+    return stride(from: 0, to: image.width * image.height * 4, by: 4).filter {
+        pixels[$0] > 110 && pixels[$0 + 1] > 110 && pixels[$0 + 2] > 110
+    }.count > 20
+}
+
 /// A stand-in portrait so the layout and fades can be checked before real art exists: a bronze head and
 /// shoulders with a crimson cloak on black, 1080x1350, written as JPEG.
 func makePortrait(seed: Int, to url: URL) {
@@ -319,7 +334,7 @@ func run(out: URL) async {
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         }
     }.padding(24).background(Color(rgb: 0x303030))
-    render(yearSheet, to: out.appendingPathComponent("year-widgets.png"))
+    render(yearSheet, to: out.appendingPathComponent("year-widgets-first.png"))
     let sheet = VStack(alignment: .leading, spacing: 24) {
         ForEach([today, long, other], id: \.id) { q in
             HStack(alignment: .top, spacing: 24) {
@@ -368,6 +383,21 @@ func run(out: URL) async {
     }.padding(20).background(Color(rgb: 0x303030))
     render(gallery, scale: 1, to: out.appendingPathComponent("artwork-gallery.png"))
     render(AppIconArt().frame(width: 1024, height: 1024), scale: 1, to: out.appendingPathComponent("AppIcon.png"))
+
+    // Repeat after the other views to distinguish first-render initialization from a layout defect.
+    let yearPreview = out.appendingPathComponent("year-widgets.png")
+    render(yearSheet, to: yearPreview)
+    var originX: CGFloat = 24
+    for (size, dimensions) in samples {
+        let padding: CGFloat = size == .small ? 14 : 18
+        let header = CGRect(x: (originX + padding) * 2, y: (24 + padding) * 2,
+                            width: 200, height: size == .small ? 50 : 70)
+        let footer = CGRect(x: (originX + padding) * 2, y: (24 + dimensions.height - padding - 16) * 2,
+                            width: (dimensions.width - padding * 2) * 2, height: 32)
+        check(hasVisibleInk(yearPreview, in: header), "Year in Dots \(size) year is visible")
+        check(hasVisibleInk(yearPreview, in: footer), "Year in Dots \(size) counts are visible")
+        originX += dimensions.width + 24
+    }
 
     print(failures == 0 ? "SELFTEST PASSED" : "SELFTEST FAILED (\(failures))")
     exit(failures == 0 ? 0 : 1)
